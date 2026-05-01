@@ -1,0 +1,34 @@
+{
+  "version": "1.0",
+  "mode": "yolo",
+  "granularity": "coarse",
+  "parallelization": true,
+  "commit_docs": true,
+  "model_profile": "balanced",
+  "workflow": {
+    "research": true,
+    "plan_check": true,
+    "verifier": true,
+    "nyquist_validation": false,
+    "auto_advance": true,
+    "_auto_chain_active": true
+  },
+  "planning": {
+    "sub_repos": []
+  },
+  "project": {
+    "name": "픽콩",
+    "code": "PICKKONG",
+    "appName": "pickkong",
+    "type": "apps-in-toss-mini-app",
+    "appType": "non-game",
+    "brandColor": "#7BD389",
+    "submitDeadline": "2026-05-24",
+    "prdSource": "pickkong_prd_v2.0.md",
+    "harnessIntegration": {
+      "feature_list": "feature_list.json",
+      "progress_log": "claude-progress.txt",
+      "granite_config": "granite.config.ts"
+    }
+  }
+}
