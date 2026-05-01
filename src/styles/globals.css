@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+/* 픽콩 디자인 토큰 — UI-SPEC 01에서 lock된 색·타이포·스페이싱 */
+@theme {
+  /* Color (60/30/10) */
+  --color-background: #FFF8EE;       /* 60% 크림 */
+  --color-surface: #FFFFFF;          /* 30% 화이트 */
+  --color-primary: #7BD389;          /* 10% 연두 — 토스 미니앱 brand primary */
+  --color-primary-soft: #D6F0DA;
+  --color-accent: #B59CD9;           /* 보조 — 라벤더 */
+  --color-text: #3F2D24;             /* 진한 브라운 */
+  --color-text-muted: #8C7B6F;
+  --color-border: #E5DCD0;
+  --color-error: #E26A6A;
+  --color-success: #7BD389;
+
+  /* Typography */
+  --font-family-base: "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", system-ui, sans-serif;
+  --font-size-label: 14px;
+  --font-size-body: 16px;
+  --font-size-heading: 20px;
+  --font-size-display: 28px;
+  --line-height-base: 1.5;
+
+  /* Spacing scale (4의 배수) */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --spacing-3xl: 64px;
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+html {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-base);
+  color: var(--color-text);
+  background: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* 라이트 모드 단일 — 다크 모드 미지원 (PRD §5.13) */
+  color-scheme: light only;
+}
+
+body {
+  margin: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Safe Area (PRD §10.12) */
+.safe-area {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
