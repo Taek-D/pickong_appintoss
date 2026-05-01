@@ -1,10 +1,12 @@
 ---
 phase: 1
 slug: foundation
-status: draft
+status: approved
 shadcn_initialized: false
 preset: tds-mobile
 created: 2026-05-01
+reviewed_at: 2026-05-01
+checker_verdict: PASS (6/6 dimensions + pickkong-specific 6/6)
 ---
 
 # Phase 1 — UI Design Contract (Foundation)
