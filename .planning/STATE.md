@@ -9,22 +9,40 @@ See: `.planning/PROJECT.md` (updated 2026-05-01)
 
 ## Current Phase
 
-**Phase 1: Foundation** — Not started
+**Phase 1: Foundation** — UI-SPEC approved, awaiting plan
 
 **Goal:** 사용자가 픽콩에 토스 로그인으로 진입해 닉네임을 1회 등록하고, 30초 내 첫 콩을 도감에 기록할 수 있다. 백엔드 mTLS와 금칙어 사전 v1이 D7까지 운영 배포된다.
 
-**Plans (5):**
+**Artifacts:**
+- ✅ `.planning/phases/01-foundation/01-UI-SPEC.md` — 7화면 디자인 컨트랙트 (S-ONB/S-LOGIN/S-NICK/S-HOME/S-ADD/S-DONE/S-CAT) — 6/6 + pickkong-specific 6/6 PASS
+- ⬜ `.planning/phases/01-foundation/01-CONTEXT.md` — `/gsd-discuss-phase 1`에서 생성 (선택)
+- ⬜ `.planning/phases/01-foundation/01-RESEARCH.md` — `/gsd-research-phase 1`에서 생성 (선택, PRD가 이미 커버)
+- ⬜ `.planning/phases/01-foundation/01-PLAN.md` — `/gsd-plan-phase 1`에서 생성
+
+**Plans (5, planning 대기):**
 - [ ] 01-01: Vite + React 19 + Tailwind 4 스캐폴드 + 백엔드 mTLS 스켈레톤 + DB 마이그레이션 + Storage 세팅
 - [ ] 01-02: 토스 로그인 강제 + appLogin + /auth/exchange + user_key 영속
 - [ ] 01-03: 닉네임 1회 입력 (S-NICK) + 정규식 + 추천 칩 6개
 - [ ] 01-04: 금칙어 v1 (D7 운영 배포)
 - [ ] 01-05: 도감 그리드 + 콩 등록 + S-DONE + S-CAT empty + cute_items
 
+**Pending user confirmations (UI-SPEC checker recommendations, non-blocking):**
+1. 카테고리 Slot 7·8 라벨 — 기본값: 책·잡지(📚), 기타(📦)
+2. S-ADD 추천 이모지 12개 — 기본값: 🎁 ✨ 💕 🌸 ⭐ 🍀 🐰 🐻 🌿 🍡 📒 💝
+3. Accent 컬러 — 기본값: 라벤더 #B59CD9 (vs 핑크)
+4. S-DONE secondary 버튼 색상/배치 명시 보강 권장
+
 ## Milestones
 
 - 🚧 **v1.0 출품**: 4페이즈 (Phase 1~4) — 마감 2026-05-24
 
 ## Recent Activity
+
+### 2026-05-01 — Phase 1 UI-SPEC approved
+- `/gsd-ui-phase 1` 하이브리드 실행 (gsd-sdk query 미지원분 직접 구현)
+- gsd-ui-researcher: UI-SPEC.md 생성 (587 lines, 7화면, PRD §16 카피 토씨 일치)
+- gsd-ui-checker: 6/6 차원 PASS + pickkong-specific 6/6 PASS, BLOCK 0건, FLAG 4건(non-blocking)
+- 커밋: `4972d4c` docs(phase-1): UI design contract for Foundation
 
 ### 2026-05-01 — Initialization
 - 신규 프로젝트로 감지됨 (PRD `pickkong_prd_v2.0.md` 기반)
@@ -44,10 +62,11 @@ See: `.planning/PROJECT.md` (updated 2026-05-01)
 
 ## Next Action
 
-**`/gsd-discuss-phase 1`** — Phase 1 (Foundation, W1) 컨텍스트 수집 및 접근 방식 명확화. 또는 `/gsd-plan-phase 1`로 바로 계획 단계 진입.
+**`/gsd-plan-phase 1`** — UI-SPEC 승인 완료, 이제 plan-phase가 UI-SPEC + REQUIREMENTS를 컨텍스트로 5개 plan 파일을 생성한다.
 
 **Also available:**
-- `/gsd-ui-phase 1` — Phase 1 화면(S-ONB/S-LOGIN/S-NICK/S-HOME/S-ADD/S-DONE/S-CAT) UI 디자인 계약(UI-SPEC.md) 생성 권장 (UI 비중 큼)
+- `/gsd-discuss-phase 1` — 추가 컨텍스트 수집이 필요하면 plan 전에 실행 (선택)
+- `/harness-progress F000a` — GSD plan 단계 건너뛰고 harness 트랙으로 Vite 스캐폴드 바로 시작
 
 ## Cross-Workflow Integration
 
