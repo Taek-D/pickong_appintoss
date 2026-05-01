@@ -10,7 +10,7 @@
 - Integer phases (1, 2, 3, 4): Planned milestone work
 - Decimal phases (e.g., 2.1): Urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 1: Foundation (W1, D1~D7)** — 인프라 + 토스 로그인 강제 + 닉네임 1회 입력 + 도감/등록 핵심 루프 + 금칙어 v1 D7 배포
+- [x] **Phase 1: Foundation (W1, D1~D7)** — 인프라 + 토스 로그인 강제 + 닉네임 1회 입력 + 도감/등록 핵심 루프 + 금칙어 v1 D7 배포 ✓ 2026-05-01 (static-pass, 런타임 검증 대기)
 - [ ] **Phase 2: Card·Share·Ads (W2, D8~D14)** — 월간 카드 upsert + 공유 흐름 + 만료 배치 + 전면 광고 단일 캡 + 닉네임 변경/탈퇴 + 만료 사전 안내 카피
 - [ ] **Phase 3: Pre-submission Hardening (W3a, D15~D18)** — §5.15 검수 체크리스트 + 회귀(S-CARD-VIEW 4케이스, 닉네임 동기화, 9~10자 미리보기) + Sentry/Analytics + 출품폼 카피 1차 확정
 - [ ] **Phase 4: Submission & Patch (W3b, D19~D23)** — 콘솔 검토 요청 + 반려 시 패치 1회 + 챌린지 출품폼 최종 제출 (D-3 출시 승인)
@@ -118,7 +118,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/5 | Not started | - |
+| 1. Foundation | 5/5 | Complete (static-pass) | 2026-05-01 |
 | 2. Card·Share·Ads | 0/5 | Not started | - |
 | 3. Pre-submission Hardening | 0/4 | Not started | - |
 | 4. Submission & Patch | 0/3 | Not started | - |

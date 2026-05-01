@@ -9,34 +9,42 @@ See: `.planning/PROJECT.md` (updated 2026-05-01)
 
 ## Current Phase
 
-**Phase 1: Foundation** — UI-SPEC approved, awaiting plan
+**Phase 1: Foundation** — ✅ Implementation complete (static-pass), awaiting human runtime verification + Phase 2 진입
 
 **Goal:** 사용자가 픽콩에 토스 로그인으로 진입해 닉네임을 1회 등록하고, 30초 내 첫 콩을 도감에 기록할 수 있다. 백엔드 mTLS와 금칙어 사전 v1이 D7까지 운영 배포된다.
 
 **Artifacts:**
-- ✅ `.planning/phases/01-foundation/01-UI-SPEC.md` — 7화면 디자인 컨트랙트 (S-ONB/S-LOGIN/S-NICK/S-HOME/S-ADD/S-DONE/S-CAT) — 6/6 + pickkong-specific 6/6 PASS
-- ⬜ `.planning/phases/01-foundation/01-CONTEXT.md` — `/gsd-discuss-phase 1`에서 생성 (선택)
-- ⬜ `.planning/phases/01-foundation/01-RESEARCH.md` — `/gsd-research-phase 1`에서 생성 (선택, PRD가 이미 커버)
-- ⬜ `.planning/phases/01-foundation/01-PLAN.md` — `/gsd-plan-phase 1`에서 생성
+- ✅ `.planning/phases/01-foundation/01-UI-SPEC.md`
+- ✅ `.planning/phases/01-foundation/01-CONTEXT.md`
+- ✅ `.planning/phases/01-foundation/01-01~05-PLAN.md` (5 plans)
+- ✅ `.planning/phases/01-foundation/01-VERIFICATION.md` — status: human_needed
+- ✅ Code: 50+ files (frontend + Hono server + Postgres schema + 금칙어 v1 + 단위 테스트)
 
-**Plans (5, planning 대기):**
-- [ ] 01-01: Vite + React 19 + Tailwind 4 스캐폴드 + 백엔드 mTLS 스켈레톤 + DB 마이그레이션 + Storage 세팅
-- [ ] 01-02: 토스 로그인 강제 + appLogin + /auth/exchange + user_key 영속
-- [ ] 01-03: 닉네임 1회 입력 (S-NICK) + 정규식 + 추천 칩 6개
-- [ ] 01-04: 금칙어 v1 (D7 운영 배포)
-- [ ] 01-05: 도감 그리드 + 콩 등록 + S-DONE + S-CAT empty + cute_items
+**Plans:**
+- [x] 01-01: Scaffold (Vite + React 19 + Tailwind 4 + Hono + Postgres)
+- [x] 01-02: 토스 로그인 (S-ONB + S-LOGIN + appLogin + /auth/exchange + /auth/me + 끊김 자동 재연결)
+- [x] 01-03: 닉네임 (S-NICK + 정규식 + 추천 칩 6개 + 5종 토스트 + POST /account/nickname)
+- [x] 01-04: 금칙어 v1 (forbidden_nicknames.json + forbidden_patterns.regex + 단위 테스트 + 미들웨어 wired)
+- [x] 01-05: 도감 + 등록 (S-HOME 그리드 + S-ADD 3단계 + S-DONE + S-CAT empty + cute_items store)
 
-**Pending user confirmations (UI-SPEC checker recommendations, non-blocking):**
-1. 카테고리 Slot 7·8 라벨 — 기본값: 책·잡지(📚), 기타(📦)
-2. S-ADD 추천 이모지 12개 — 기본값: 🎁 ✨ 💕 🌸 ⭐ 🍀 🐰 🐻 🌿 🍡 📒 💝
-3. Accent 컬러 — 기본값: 라벤더 #B59CD9 (vs 핑크)
-4. S-DONE secondary 버튼 색상/배치 명시 보강 권장
+**Pending user verification (Phase 4 직전):**
+- pnpm install + pnpm dev (네트워크/시간 의존)
+- 토스 콘솔 mTLS 인증서 발급
+- Supabase 또는 로컬 Postgres 마이그레이션 실행
+- 브라우저 mock 흐름 e2e 확인 (5종 닉네임 케이스 + 도감 → 등록 → 완료)
 
 ## Milestones
 
 - 🚧 **v1.0 출품**: 4페이즈 (Phase 1~4) — 마감 2026-05-24
 
 ## Recent Activity
+
+### 2026-05-01 — Phase 1 implementation complete (autonomous)
+- /gsd-autonomous --auto 진입 → Phase 1 5 plans + scaffold + verify 완수
+- 산출물: ~50 files, ~3,000+ lines (frontend + Hono server + Postgres schema + 금칙어 v1)
+- VERIFICATION status: `human_needed` — 정적 PASS, 런타임 검증은 사용자 환경 셋업 후
+- 커밋: scaffold(c6995ee) + 4 plan implementations (이번 turn에서 단일 커밋)
+- 다음: Phase 2 (Card·Share·Ads·Expiry·Withdraw) 진입
 
 ### 2026-05-01 — Phase 1 UI-SPEC approved
 - `/gsd-ui-phase 1` 하이브리드 실행 (gsd-sdk query 미지원분 직접 구현)
@@ -62,11 +70,14 @@ See: `.planning/PROJECT.md` (updated 2026-05-01)
 
 ## Next Action
 
-**`/gsd-plan-phase 1`** — UI-SPEC 승인 완료, 이제 plan-phase가 UI-SPEC + REQUIREMENTS를 컨텍스트로 5개 plan 파일을 생성한다.
+**Phase 2: Card·Share·Ads·Expiry·Withdraw 진입** — autonomous loop가 자동으로 다음 phase로 advance.
 
-**Also available:**
-- `/gsd-discuss-phase 1` — 추가 컨텍스트 수집이 필요하면 plan 전에 실행 (선택)
-- `/harness-progress F000a` — GSD plan 단계 건너뛰고 harness 트랙으로 Vite 스캐폴드 바로 시작
+Phase 2 plans (계획됨):
+- 02-01 카드 룰베이스 + monthly_cards upsert (8자 hash) + S-CARD 본인 카피
+- 02-02 S-SHARE 시트 + 토스 share + 만료 안내 카피 4지점 통일
+- 02-03 S-CARD-VIEW 4분기 + S-VIEWER-INTRO + 라우팅
+- 02-04 전면 광고 위치 A 단일 + 월 1회 캡 + silent skip
+- 02-05 닉네임 변경 + 회원 탈퇴 + 만료 cron + 기록 수정/삭제
 
 ## Cross-Workflow Integration
 

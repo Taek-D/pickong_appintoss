@@ -1,0 +1,35 @@
+{
+  "_meta": {
+    "version": 1,
+    "updated_at": "2026-05-01",
+    "policy": "관리자 사칭 강력 / 욕설·혐오 1차 차단 (PRD §5.11)",
+    "deployment": "D7 운영 배포 완료"
+  },
+  "exact_match_admin": [
+    "toss", "Toss", "TOSS",
+    "토스", "토스공식", "토스운영", "토스관리", "토스팀",
+    "admin", "Admin", "ADMIN",
+    "관리자", "운영자", "운영팀", "관리팀",
+    "공식", "official", "Official", "OFFICIAL",
+    "픽콩", "픽콩공식", "픽콩운영", "픽콩관리", "픽콩팀", "픽콩official", "픽콩admin",
+    "pickkong", "PickKong", "Pickkong", "PICKKONG",
+    "pickkong_admin", "pickkong_official", "pickkong_team",
+    "pickkongadmin", "pickkongofficial", "pickkongteam",
+    "manager", "Manager", "moderator", "Moderator", "mod",
+    "support", "Support", "고객센터", "헬프", "help"
+  ],
+  "exact_match_profanity": [
+    "씨발", "ㅅㅂ", "ㅆㅂ", "씨바", "시발", "쒸발",
+    "개새끼", "ㄱㅅㄲ", "개새", "개색",
+    "병신", "ㅂㅅ", "지랄", "꺼져", "엿먹어",
+    "fuck", "Fuck", "FUCK", "fck", "f*ck",
+    "shit", "Shit", "SHIT",
+    "bitch", "asshole", "dickhead",
+    "좆", "씹", "씹새", "썅", "썅놈"
+  ],
+  "exact_match_hate": [
+    "한남", "한녀", "메갈", "워마드",
+    "일베", "일베충", "급식충", "맘충",
+    "틀딱", "꼴페미"
+  ]
+}

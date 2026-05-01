@@ -39,7 +39,7 @@
         "src/main.tsx + src/App.tsx + globals.css",
         "src/lib/sdk.ts (dynamic import + isSupported 패턴)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F007",
@@ -59,7 +59,7 @@
       "skill": "appintoss-login",
       "reference": "with-app-login",
       "steps": ["S-LOGIN 화면", "appLogin 호출", "백엔드 /auth/exchange (mTLS)", "user_key 영속"],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F014",
@@ -68,7 +68,7 @@
       "description": "로그인 끊김 감지 + 자동 재연결 (바텀시트 금지)",
       "prdRef": "§5.7",
       "steps": ["getIsTossLoginIntegratedService 감지", "자동 S-LOGIN 라우팅"],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F021",
@@ -83,7 +83,7 @@
         "POST/PATCH /account/nickname",
         "설정에서도 동일 추천 칩 6개"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F026",
@@ -98,7 +98,7 @@
         "백엔드 닉네임 API에서 재검증",
         "D7 v1 배포 완료"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F015",
@@ -113,15 +113,15 @@
       "id": "F000b",
       "category": "infrastructure",
       "priority": "P0",
-      "description": "백엔드 스켈레톤 (mTLS + Express/Nest + DB 마이그레이션)",
+      "description": "백엔드 스켈레톤 (mTLS + Hono + DB 마이그레이션)",
       "prdRef": "§10.2, §13.1",
       "steps": [
         "/auth/exchange, /auth/me",
         "/account, /account/nickname",
-        "/cards/{user_key}/{yyyymm}, /cards/{card_id}",
+        "/cards/{user_key}/{yyyymm}, /cards/{card_id} (Phase 2)",
         "accounts + monthly_cards 테이블"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F000c",
@@ -136,7 +136,7 @@
         "ad_card_shown:{user_key}:{yyyymm}",
         "viewer_intro_seen:{user_key}"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F000d",
@@ -145,7 +145,7 @@
       "description": "라우팅 + getSchemeUri 카드 ID 파싱 (공유 진입)",
       "prdRef": "§6.2, §10.3",
       "steps": ["스킴 /card/{8-hash} 파싱", "진입 라우팅 분기 6종"],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F001",
@@ -160,7 +160,7 @@
         "이번 달 카드 보기 버튼 (조건부)",
         "BottomCTA 오늘의 콩 줍기"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F002",
@@ -169,7 +169,7 @@
       "description": "S-ADD 콩 등록 3단계 + S-DONE 완료",
       "prdRef": "§7.7, §7.8",
       "steps": ["카테고리 → 금액 → 이모지·메모", "30초 내 완료", "cute_items 저장", "S-DONE 라우팅"],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F003",
@@ -178,7 +178,7 @@
       "description": "수집률·주간 진행 계산",
       "prdRef": "§7.6",
       "steps": ["월별 카테고리 집계", "주간 카운트", "summary 캐시"],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F004",
@@ -346,7 +346,7 @@
       "description": "빈/완료 상태 UX + S-CAT 카테고리 상세",
       "prdRef": "§7.10",
       "steps": ["empty 카피", "S-CAT 헤더 + 리스트"],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F030",
