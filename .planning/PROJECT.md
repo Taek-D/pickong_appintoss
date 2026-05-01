@@ -86,6 +86,14 @@
 | 금칙어 운영을 코드 PR로 (관리자 콘솔 미구축) | MVP 범위 단순화. 변형 정규식으로 관리자 사칭만 강력 차단, 욕설·혐오는 가볍게. | — Pending |
 | 챌린지 출품폼 한 줄 50자 카피를 35자로 다듬음 | "좋아한 귀여운 것들" 어색함 해소 → "마음에 든 귀여움". | ✓ Good (PRD v2.0 확정) |
 | 챌린지 연관성 200자에 "소비를 반성하는 가계부가 아니라" 보존 | 검수 안전판 — 소비 조장 오해 차단. | ✓ Good |
+| 백엔드 = Node.js + Hono + TypeScript | Hono는 가장 가벼운 모던 TS 프레임워크 — Node/Bun/Cloudflare/Vercel 모두 호환, mTLS는 Node native fetch agent. Express보다 가벼우면서 type-safe. | — Pending (autonomous-default) |
+| DB = Postgres via Supabase | 무료 티어, 서버리스, mTLS 미사용(연결 끊김 자동 재시도), 타임존 KST cron 지원, 마이그레이션 SQL로 단순. | — Pending (autonomous-default) |
+| Cron = GitHub Actions schedule | 무료, 매월 1일 0시 KST cron 표현식 `0 15 L-1 * *` 또는 `0 0 1 * *`(UTC+9 보정). 1시간 6회 재시도는 워크플로 내 retry. | — Pending (autonomous-default) |
+| Sentry/Granite Analytics = Mock DSN | 실 DSN/콘솔 ID는 배포 시점에 .env로 주입. 코드는 wrapper로 분리해 mock fallback. | — Pending (autonomous-default) |
+| 카테고리 Slot 7·8 라벨 = 책·잡지(📚) / 기타(📦) | PRD §12 6종 캐릭터 + 다양성 보너스 1 + 새싹 1 = 8 슬롯이지만 Slot 7·8 라벨 PRD 침묵. 책·잡지는 굿즈/문구 인접 도메인, 기타는 안전판. | — Pending (autonomous-default, 변경 가능) |
+| S-ADD 추천 이모지 12종 = 🎁✨💕🌸⭐🍀🐰🐻🌿🍡📒💝 | PRD §7.7 수량만 명시. 카테고리(굿즈/문구/간식/선물/덕질/반려/책/기타) 톤 분포 + 일반 귀여움 이모지 배합. | — Pending (autonomous-default) |
+| Accent 컬러 = 라벤더 #B59CD9 | PRD §15 핑크/라벤더 양자택일. 라벤더가 도감/취향/굿즈 톤과 정합, 핑크의 할인·세일 톤 충돌 회피. | — Pending (autonomous-default) |
+| S-DONE secondary CTA = TDS Button variant=secondary, outline #7BD389 | UI-SPEC checker 권장 명시. Primary("도감 보러가기")는 BottomCTA, Secondary("하나 더 줍기")는 그 위 outline 버튼. | — Pending (autonomous-default) |
 
 ## Evolution
 
