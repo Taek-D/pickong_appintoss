@@ -47,7 +47,11 @@
       "priority": "P1",
       "description": "S-ONB 온보딩 슬라이드 2~3장 (인트로 화면 패턴)",
       "prdRef": "§7.2",
-      "steps": ["슬라이드 컴포넌트", "BottomCTA '시작하기'", "권한 요청 0건"],
+      "steps": [
+        "슬라이드 컴포넌트",
+        "BottomCTA '시작하기'",
+        "권한 요청 0건"
+      ],
       "passes": false
     },
     {
@@ -58,7 +62,12 @@
       "prdRef": "§5.7, §7.3",
       "skill": "appintoss-login",
       "reference": "with-app-login",
-      "steps": ["S-LOGIN 화면", "appLogin 호출", "백엔드 /auth/exchange (mTLS)", "user_key 영속"],
+      "steps": [
+        "S-LOGIN 화면",
+        "appLogin 호출",
+        "백엔드 /auth/exchange (mTLS)",
+        "user_key 영속"
+      ],
       "passes": true
     },
     {
@@ -67,7 +76,10 @@
       "priority": "P0",
       "description": "로그인 끊김 감지 + 자동 재연결 (바텀시트 금지)",
       "prdRef": "§5.7",
-      "steps": ["getIsTossLoginIntegratedService 감지", "자동 S-LOGIN 라우팅"],
+      "steps": [
+        "getIsTossLoginIntegratedService 감지",
+        "자동 S-LOGIN 라우팅"
+      ],
       "passes": true
     },
     {
@@ -106,8 +118,13 @@
       "priority": "P0",
       "description": "회원 탈퇴 / 데이터 삭제 (removeByUserKey + monthly_cards 삭제)",
       "prdRef": "§5.9",
-      "steps": ["DELETE /account", "removeByUserKey 호출", "Storage 클리어", "S-ONB 라우팅"],
-      "passes": false
+      "steps": [
+        "DELETE /account",
+        "removeByUserKey 호출",
+        "Storage 클리어",
+        "S-ONB 라우팅"
+      ],
+      "passes": true
     },
     {
       "id": "F000b",
@@ -144,7 +161,10 @@
       "priority": "P0",
       "description": "라우팅 + getSchemeUri 카드 ID 파싱 (공유 진입)",
       "prdRef": "§6.2, §10.3",
-      "steps": ["스킴 /card/{8-hash} 파싱", "진입 라우팅 분기 6종"],
+      "steps": [
+        "스킴 /card/{8-hash} 파싱",
+        "진입 라우팅 분기 6종"
+      ],
       "passes": true
     },
     {
@@ -168,7 +188,12 @@
       "priority": "P0",
       "description": "S-ADD 콩 등록 3단계 + S-DONE 완료",
       "prdRef": "§7.7, §7.8",
-      "steps": ["카테고리 → 금액 → 이모지·메모", "30초 내 완료", "cute_items 저장", "S-DONE 라우팅"],
+      "steps": [
+        "카테고리 → 금액 → 이모지·메모",
+        "30초 내 완료",
+        "cute_items 저장",
+        "S-DONE 라우팅"
+      ],
       "passes": true
     },
     {
@@ -177,7 +202,11 @@
       "priority": "P0",
       "description": "수집률·주간 진행 계산",
       "prdRef": "§7.6",
-      "steps": ["월별 카테고리 집계", "주간 카운트", "summary 캐시"],
+      "steps": [
+        "월별 카테고리 집계",
+        "주간 카운트",
+        "summary 캐시"
+      ],
       "passes": true
     },
     {
@@ -186,8 +215,11 @@
       "priority": "P0",
       "description": "월간 캐릭터 룰 (서버·클라 동일)",
       "prdRef": "§12",
-      "steps": ["8가지 character_type 룰 구현", "서버 동일 로직"],
-      "passes": false
+      "steps": [
+        "8가지 character_type 룰 구현",
+        "서버 동일 로직"
+      ],
+      "passes": true
     },
     {
       "id": "F018",
@@ -201,7 +233,7 @@
         "card_status active/dirty",
         "본인 진입 시 재계산"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F024",
@@ -215,7 +247,7 @@
         "공유 메시지 본문 끝 카피",
         "S-CARD-VIEW 만료 헤드라인 통일"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F005",
@@ -230,7 +262,7 @@
         "scheme /card/{card_id}",
         "외부 SNS 호출 금지"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F027",
@@ -238,8 +270,11 @@
       "priority": "P0",
       "description": "공유 메시지 본문 양식 ({닉네임}의 이번 달 카드예요. 이번 달 안에만 볼 수 있어요.)",
       "prdRef": "§7.14, §16",
-      "steps": ["메시지 페이로드 양식", "닉네임 9~10자 미리보기 컷오프 검증"],
-      "passes": false
+      "steps": [
+        "메시지 페이로드 양식",
+        "닉네임 9~10자 미리보기 컷오프 검증"
+      ],
+      "passes": true
     },
     {
       "id": "F019",
@@ -254,7 +289,7 @@
         "만료/삭제/탈퇴 안내 분기",
         "광고 없음"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F022",
@@ -262,8 +297,12 @@
       "priority": "P0",
       "description": "S-VIEWER-INTRO 열람자용 1장 온보딩 (신규 가입자만 1회)",
       "prdRef": "§7.12",
-      "steps": ["is_first_login 체크", "viewer_intro_seen 플래그", "광고 없음"],
-      "passes": false
+      "steps": [
+        "is_first_login 체크",
+        "viewer_intro_seen 플래그",
+        "광고 없음"
+      ],
+      "passes": true
     },
     {
       "id": "F020",
@@ -271,8 +310,11 @@
       "priority": "P0",
       "description": "공유 만료/삭제/탈퇴자 안내 화면",
       "prdRef": "§5.10, §7.13",
-      "steps": ["만료 헤드라인 ('이 카드는 지난 달 이야기예요')", "픽콩 시작하기 CTA"],
-      "passes": false
+      "steps": [
+        "만료 헤드라인 ('이 카드는 지난 달 이야기예요')",
+        "픽콩 시작하기 CTA"
+      ],
+      "passes": true
     },
     {
       "id": "F016",
@@ -288,7 +330,7 @@
         "실패/타임아웃 → 즉시 S-CARD (silent skip)",
         "공유·열람자 온보딩에 광고 없음"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F017",
@@ -301,7 +343,7 @@
         "ad_show 시점에만 갱신",
         "로드 실패/skip/종료 시 갱신 없음"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F023",
@@ -315,7 +357,7 @@
         "본인 card_status='active' 영구 유지",
         "1시간 단위 6회 재시도 + 알람"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F025",
@@ -328,7 +370,7 @@
         "UPDATE monthly_cards SET nickname_snapshot WHERE user_key + current_month + active",
         "과거 카드 미갱신 (시점성 보존)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F006",
@@ -336,8 +378,13 @@
       "priority": "P1",
       "description": "S-LIST 기록 수정·삭제 (단말+서버 동기화)",
       "prdRef": "§7.15",
-      "steps": ["최신순 정렬", "카테고리 필터", "수정/삭제 시트", "같은 달 카드 dirty"],
-      "passes": false
+      "steps": [
+        "최신순 정렬",
+        "카테고리 필터",
+        "수정/삭제 시트",
+        "같은 달 카드 dirty"
+      ],
+      "passes": true
     },
     {
       "id": "F008",
@@ -345,7 +392,10 @@
       "priority": "P1",
       "description": "빈/완료 상태 UX + S-CAT 카테고리 상세",
       "prdRef": "§7.10",
-      "steps": ["empty 카피", "S-CAT 헤더 + 리스트"],
+      "steps": [
+        "empty 카피",
+        "S-CAT 헤더 + 리스트"
+      ],
       "passes": true
     },
     {
@@ -368,7 +418,11 @@
       "priority": "P0",
       "description": "Sentry + Granite Analytics 적재 (이벤트 §9.2)",
       "prdRef": "§9, §17.3",
-      "steps": ["Sentry 클라+서버", "이벤트 택소노미 적용", "광고 직후 card_view 도달률 알람"],
+      "steps": [
+        "Sentry 클라+서버",
+        "이벤트 택소노미 적용",
+        "광고 직후 card_view 도달률 알람"
+      ],
       "passes": false
     }
   ],
@@ -376,7 +430,18 @@
     "appName": "픽콩",
     "tagline": "귀여운 취향을 하나씩 모으는 나만의 도감",
     "category": "라이프스타일 / 일상 / 기록",
-    "keywords": ["귀여움", "도감", "취향", "굿즈", "문구", "선물", "덕질", "간식", "기록", "수집"],
+    "keywords": [
+      "귀여움",
+      "도감",
+      "취향",
+      "굿즈",
+      "문구",
+      "선물",
+      "덕질",
+      "간식",
+      "기록",
+      "수집"
+    ],
     "ageRating": "전체"
   }
 }

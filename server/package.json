@@ -8,6 +8,7 @@
     "start": "node --env-file=../.env --import tsx src/index.ts",
     "typecheck": "tsc --noEmit",
     "migrate": "tsx --env-file=../.env src/migrate.ts",
+    "expire": "tsx --env-file=../.env src/scripts/expire-cards.ts",
     "test": "node --test --import tsx 'test/**/*.test.ts'"
   },
   "dependencies": {

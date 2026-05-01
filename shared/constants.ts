@@ -69,11 +69,70 @@ export const COPY = {
   done_cta_more: '하나 더 줍기',
   cat_empty: '이 카테고리는 아직 비어 있어요. 하나 담아볼까요?',
   toast_save_fail: '저장이 안 됐어요. 다시 한 번 눌러 볼까요?',
+  card_save_fail: '카드를 만들지 못했어요. 잠시 후 다시 시도해 볼까요?',
   toast_network: '인터넷 연결을 확인하고 다시 시도해 볼까요?',
   weekly_progress: (left: number) =>
     left <= 0 ? '이번 주 목표를 채웠어요!' : `이번 주 3콩까지 ${left}콩 남았어요`,
   collection_rate: (rate: number) => `이번 달 ${rate}% 채웠어요`,
+
+  // ─── Phase 2: Card·Share·View·Ad ─────────────────────
+  card_expiry_owner: '친구는 이번 달 안에만 볼 수 있어요',
+  card_expiry_neutral: '이번 달 안에만 볼 수 있어요',
+  card_expired_headline: '이 카드는 지난 달 이야기예요',
+  card_expired_sub: '지금은 볼 수 없지만, 픽콩에서 내 도감은 언제든 시작할 수 있어요',
+  card_expired_cta: '픽콩 시작하기',
+  card_not_found_headline: '카드를 찾을 수 없어요',
+  card_save_image: '이미지 저장',
+  card_share_button: '공유하기',
+  card_share_via_toss: '토스로 공유하기',
+  card_owner_cta: '내 도감 보러가기',
+  card_other_cta: '나도 도감 시작하기',
+  card_other_header: (nickname: string) => `${nickname}의 이번 달 카드예요`,
+  card_owner_header: (character: string) => `이번 달 나는 ${character}`,
+
+  // 공유 메시지 양식 (PRD §16, 30자 내외)
+  share_message: (nickname: string) =>
+    `${nickname}의 이번 달 카드예요. 이번 달 안에만 볼 수 있어요.`,
+
+  viewer_intro_headline: (nickname: string) => `${nickname}이(가) 이번 달 카드를 보냈어요`,
+  viewer_intro_body: '픽콩은 좋아한 귀여운 것을 모으는 도감이에요',
+  viewer_intro_cta: '이 카드 보러가기',
+
+  // 닉네임 변경 (S-NICK-EDIT)
+  nick_headline_edit: '닉네임을 바꿀까요?',
+  nick_sub_edit: '바뀐 이름은 이번 달 카드부터 보여요',
+  nick_cta_edit: '이 이름으로 바꿀게요',
+  nick_cta_cancel: '취소',
+  nick_changed_toast: '닉네임을 바꿨어요',
+
+  // 설정 + 탈퇴
+  set_reset: '데이터 초기화',
+  set_change_nickname: '닉네임 바꾸기',
+  set_account_delete: '내 도감 데이터 삭제',
+  set_account_delete_confirm: '내 도감을 모두 지울까요? 기록은 되돌릴 수 없어요.',
+  set_account_delete_fail: '지금은 처리가 안 됐어요. 잠시 후 다시 시도해 볼까요?',
+  set_version: '버전 정보',
+  set_about: '만든이',
+  set_report: '신고하기',
+
+  // 기록 목록 + 수정·삭제
+  list_filter_all: '전체',
+  list_edit: '수정',
+  list_delete: '삭제',
+  list_delete_confirm: '이 콩을 도감에서 지울까요?',
 } as const;
+
+// 캐릭터 라벨 (PRD §12)
+export const CHARACTER_LABELS: Record<string, string> = {
+  goods_hamster: '굿즈콩 햄스터',
+  stationery_rabbit: '문구콩 토끼',
+  snack_cat: '간식콩 고양이',
+  gift_bear: '선물콩 곰돌이',
+  fan_squirrel: '덕질콩 다람쥐',
+  pet_dog: '반려콩 강아지',
+  taste_diverse: '취향부자 콩요정',
+  sprout: '새싹콩 수집가',
+};
 
 // amount band (PRD §9.2 add_input_amount property)
 export function amountBand(amount: number): string {

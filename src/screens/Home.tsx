@@ -1,18 +1,20 @@
 // S-HOME — 메인 도감 (PRD §7.6)
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Top } from '@/components/Top';
 import { BottomCTA } from '@/components/BottomCTA';
 import { useItems } from '@/state/items';
 import { useSession } from '@/state/session';
 import { track } from '@/lib/analytics';
-import { CATEGORIES, COPY, CARD_UNLOCK_THRESHOLD } from '@shared/constants';
+import { adCap } from '@/lib/storage';
+import { CATEGORIES, COPY, CARD_UNLOCK_THRESHOLD, ymOf } from '@shared/constants';
 import { cn } from '@/lib/cn';
 
 export function Home(): JSX.Element {
   const nav = useNavigate();
   const { items, loaded } = useItems();
-  const { nickname } = useSession();
+  const { userKey, nickname } = useSession();
+  const [adAlreadyShown, setAdAlreadyShown] = useState(false);
 
   const summary = useMemo(() => useItems.getState().summary(), [items]);
   const collection = Math.round(summary.collection_rate * 100);
@@ -24,7 +26,11 @@ export function Home(): JSX.Element {
       collected_count: summary.total_count,
       month: summary.ym,
     });
-  }, [loaded, items.length, summary.total_count, summary.ym]);
+    if (userKey) {
+      const yyyymm = ymOf(new Date()).replace('-', '');
+      void adCap.wasShown(userKey, yyyymm).then(setAdAlreadyShown);
+    }
+  }, [loaded, items.length, summary.total_count, summary.ym, userKey]);
 
   const cardEligible = summary.total_count >= CARD_UNLOCK_THRESHOLD;
 
@@ -37,9 +43,16 @@ export function Home(): JSX.Element {
     nav(`/cat/${catId}`);
   }
   function onCardUnlock(): void {
-    track('home_press_card_unlock', { eligible: cardEligible, ad_eligible: false });
+    track('home_press_card_unlock', {
+      eligible: cardEligible,
+      ad_eligible: cardEligible && !adAlreadyShown,
+    });
     if (!cardEligible) return;
-    // Phase 2에서 광고 → S-CARD 분기 wired
+    if (adAlreadyShown) {
+      nav('/card/own');
+    } else {
+      nav('/ad/card');
+    }
   }
 
   return (
@@ -48,6 +61,15 @@ export function Home(): JSX.Element {
         title=""
         left={
           <span className="text-[18px] font-bold text-[var(--color-text)]">픽콩</span>
+        }
+        right={
+          <button
+            onClick={() => nav('/set')}
+            aria-label="설정"
+            className="text-[20px] text-[var(--color-text-muted)]"
+          >
+            ⋯
+          </button>
         }
       />
 
@@ -120,7 +142,7 @@ export function Home(): JSX.Element {
         >
           <div className="text-[14px] font-semibold">이번 달 카드 보기</div>
           <div className="mt-1 text-[12px]">
-            {cardEligible ? '월간 캐릭터를 받아 보세요 (Phase 2)' : COPY.card_lock_hint}
+            {cardEligible ? '월간 캐릭터를 만나러 가요' : COPY.card_lock_hint}
           </div>
         </button>
       </div>
