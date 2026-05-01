@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit && pnpm --dir server typecheck",
     "lint": "tsc --noEmit",
     "db:migrate": "pnpm --dir server migrate",
-    "test": "pnpm --dir server test"
+    "test": "pnpm --dir server test",
+    "submission:validate": "node scripts/validate-submission.mjs"
   },
   "dependencies": {
     "@apps-in-toss/web-framework": "2.0.1",

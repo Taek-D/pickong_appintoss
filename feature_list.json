@@ -52,7 +52,7 @@
         "BottomCTA '시작하기'",
         "권한 요청 0건"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F013",
@@ -410,7 +410,7 @@
         "연관성: 약 196자 카피 보존",
         "출품 직전 W3b 토씨 단위 점검"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F099",
@@ -423,7 +423,7 @@
         "이벤트 택소노미 적용",
         "광고 직후 card_view 도달률 알람"
       ],
-      "passes": false
+      "passes": true
     }
   ],
   "submissionMeta": {

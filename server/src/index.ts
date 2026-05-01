@@ -7,6 +7,9 @@ import { authRoutes } from './routes/auth';
 import { accountRoutes } from './routes/account';
 import { cardsRoutes } from './routes/cards';
 import { sessionMiddleware } from './middleware/auth';
+import { initSentry, captureException } from './lib/sentry';
+
+void initSentry();
 
 const app = new Hono();
 
@@ -33,7 +36,8 @@ app.route('/cards', cardsRoutes);
 // 에러 핸들러
 app.onError((err, c) => {
   console.error('[error]', err);
-  return c.json({ error_code: 'internal', message: String(err) }, 500);
+  captureException(err);
+  return c.json({ error_code: 'internal' }, 500);
 });
 
 const port = Number(process.env.PORT ?? 8787);
