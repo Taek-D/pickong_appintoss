@@ -3,7 +3,7 @@
 ## 프로젝트 정보
 - 앱 이름: 픽콩 (appName: pickkong)
 - 앱 유형: 비게임 (라이프스타일/일상/기록) — TDS 디자인 시스템 필수
-- 브랜드 컬러: #7BD389 (연두/민트)
+- 브랜드 컬러: #7BD389 (연두/민트), Accent: 라벤더 #B59CD9
 - 챌린지: 앱인토스 바이브코딩 챌린지 "귀여운 게 최고야"
 - 출품 마감: 2026-05-24
 - PRD: pickkong_prd_v2.0.md (출품 확정안)
@@ -16,7 +16,7 @@
 - 공유는 토스 share만 (외부 링크 0건), 스킴 /card/{8-hash}
 - 공유 카드 월 만료 (매월 1일 0시 KST 배치), 본인 카드는 영구 유지
 - 만료 사전 안내 — S-CARD 본인 카피 매번 노출
-- 외부 호스팅 자산 0건 (OG 이미지 미사용 — Phase 2)
+- 외부 호스팅 자산 0건 (OG 이미지 미사용 — Phase 2 백로그)
 - 권한 요청 0건 (토스 로그인만)
 - 다크패턴 5종 부재 (특히 4번 — 예상치 못한 광고)
 - 라이트 모드 단일 톤
@@ -26,44 +26,114 @@
 
 - [x] 1단계: 요구사항 정의 (PRD v2.0 출품 확정안 보유)
 - [x] 2단계: 반려방지 초기화 (granite.config.ts + index.html + feature_list.json + claude-progress.txt)
-- [ ] 3단계: SDK 블록 선택 — 다음 작업
-- [ ] 4단계: TDS 디자인 적용 (/appintoss-tds-mobile)
-- [ ] 5단계: 점진적 구현 (W1~W3, /harness-progress 반복)
-- [ ] 6단계: 검증 루프 (/harness-validate)
-- [ ] 7단계: 최종 심사 (/appintoss-nongame-launch-checklist)
+- [x] 3단계: SDK 블록 선택 (with-app-login / with-interstitial-ad / with-share-link / with-storage / with-navigation-bar / with-back-event 매핑 완료)
+- [x] 4단계: TDS 디자인 적용 (Phase 1 UI-SPEC 승인, TDS-스타일 컴포넌트 wrapper로 구현)
+- [x] 5단계: 점진적 구현 — Phase 1~4 모든 기능 구현 (30/30 passes=true)
+- [ ] 6단계: 검증 루프 (/harness-validate) — **다음 작업 후보**
+- [ ] 7단계: 최종 심사 (/appintoss-nongame-launch-checklist) — deployment 후
 
 ## 일정 (잔여 23일)
 
-| 주차 | 기간 | 목표 |
-|---|---|---|
-| W1 | D1~D7 | 핵심 루프 + 로그인 + 닉네임 + 백엔드 + 금칙어 v1 (D7 배포) |
-| W2 | D8~D14 | 결과·서버 카드·공유·광고·만료·탈퇴 + S-NICK-EDIT |
-| W3a | D15~D18 | 검수 직전 점검 + 출품폼 카피 1차 확정 |
-| W3b | D19~D23 | 검수·반려·출품 (D-3까지 출시 승인) |
+| 주차 | 기간 | 목표 | 상태 |
+|---|---|---|---|
+| W1 | D1~D7 | 핵심 루프 + 로그인 + 닉네임 + 백엔드 + 금칙어 v1 | ✓ 코드 완료 |
+| W2 | D8~D14 | 결과·서버 카드·공유·광고·만료·탈퇴 + S-NICK-EDIT | ✓ 코드 완료 |
+| W3a | D15~D18 | 검수 직전 점검 + 출품폼 카피 1차 확정 | ✓ 완료 (passed) |
+| W3b | D19~D23 | 검수·반려·출품 (D-3까지 출시 승인) | ⏳ deployment 단계 |
 
-## SDK 블록 매핑 (3단계 사전 정리)
+## SDK 블록 매핑
 
-| 필요 기능 | apps-in-toss-examples-robin 블록 | 대응 스킬 |
-|---|---|---|
-| 토스 로그인 | with-app-login | /appintoss-login |
-| 전면 광고 | with-interstitial-ad | /appintoss-rewarded-ad |
-| 공유 링크 | with-share-link | — |
-| Storage | with-storage | — |
-| 내비게이션바 | with-navigation-bar | — |
-| 뒤로가기 | with-back-event | — |
-| 시나리오(공유 흐름) | scenario-share-viral | — |
-| 시나리오(서버 카드 upsert) | scenario-mission-system | — |
+| 필요 기능 | apps-in-toss-examples-robin 블록 | 대응 스킬 | 구현 위치 |
+|---|---|---|---|
+| 토스 로그인 | with-app-login | /appintoss-login | src/lib/auth.ts + src/lib/sdk.ts (appLogin) + server/src/lib/toss-client.ts (mTLS) |
+| 전면 광고 | with-interstitial-ad | /appintoss-rewarded-ad | src/lib/ad.ts (IntegratedAd + 1.5s 타임아웃 + silent skip) |
+| 공유 링크 | with-share-link | — | src/lib/sdk.ts (getTossShareLink + share) + src/screens/Share.tsx |
+| Storage | with-storage | — | src/lib/sdk.ts (Storage wrapper) + src/lib/storage.ts (키 헬퍼) |
+| 내비게이션바 | with-navigation-bar | — | granite.config.ts (Toss 기본) + src/components/Top.tsx |
+| 뒤로가기 | with-back-event | — | React Router back |
+| 시나리오(공유 흐름) | scenario-share-viral | — | src/lib/share-entry.ts + src/router.tsx ShareCardGate |
+| 시나리오(서버 카드 upsert) | scenario-mission-system | — | server/src/routes/cards.ts |
+
+## 현재 산출물 요약
+
+```
+src/                  18 files (Phase 1: 7 화면 + libs / Phase 2: 8 화면 + libs)
+server/               12 files (Hono + Postgres + mTLS + cron + tests)
+shared/                2 files (types + constants with COPY)
+submission/            9 files (콘솔 메타 + QA + 30분 모니터링 + 출시 + 출품폼 + 카피 + 차별화)
+.planning/phases/     22 files (4 phases × CONTEXT/PLAN/UI-SPEC/VERIFICATION)
+.github/workflows/     1 file  (expire-cards cron)
+scripts/               1 file  (validate-submission.mjs)
+```
 
 ## 세션 기록
 
-### Session 1 — 2026-05-01
-- PRD v2.0 (pickkong_prd_v2.0.md) 분석 완료
-- 프로젝트 상태 감지: 신규 (granite.config.ts/feature_list.json/package.json 모두 없음)
-- /harness-init 실행 — Step 1~5 완료:
-  - granite.config.ts (appName=pickkong, displayName=픽콩, primaryColor=#7BD389)
-  - index.html (viewport user-scalable=no + og 메타 + 한글 title)
-  - feature_list.json (F000 초기화 + 29개 기능 항목, F000만 passes=true)
-  - claude-progress.txt
-- ID 체계: F000 계열(인프라 셋업, F000/F000a~d) + F001~F030(PRD §8 원본 매핑) + F099(모니터링)
-- 다음 작업: 3단계 SDK 블록 선택 후 5단계 점진적 구현 → /harness-progress 호출
-- 우선순위: F000a (Vite 스캐폴드) → F000b (백엔드 스켈레톤) → F013 (토스 로그인) → F021 (닉네임) → F026 (금칙어 v1, D7 배포)
+### Session 1 — 2026-05-01 (초기화)
+- /harness-init 실행: granite.config.ts + index.html + feature_list.json (30 항목) + claude-progress.txt 생성
+- ID 체계 확립: F000 계열(인프라) + F001~F030(PRD §8 매핑) + F099(모니터링)
+
+### Session 2 — 2026-05-01 (GSD 스캐폴드 + Phase 1 UI-SPEC)
+- /gsd-new-project --auto: gsd-sdk v0.1.0 설치 + .planning/* 6 파일 생성 (config, PROJECT, REQUIREMENTS, ROADMAP, STATE, research/SUMMARY)
+- 38 v1 requirements 추출, Coarse 4페이즈 구조
+- /gsd-ui-phase 1: 7화면 디자인 컨트랙트 (S-ONB/S-LOGIN/S-NICK/S-HOME/S-ADD/S-DONE/S-CAT) 6/6 + pickkong-specific 6/6 PASS
+- 4건 pending decision 합리적 default로 lock (Slot 7·8=책·잡지/기타, 이모지 12개, 라벤더 #B59CD9, S-DONE secondary outline)
+
+### Session 3 — 2026-05-01 (GSD autonomous, 4 phases 완수)
+- /gsd-autonomous: 4 phases × 17 plans 자율 실행 → 30/30 features passes=true
+
+**Phase 1 (Foundation, W1):**
+- F000a Vite+React 19+Tailwind 4 스캐폴드, F000b Hono+Postgres 백엔드, F000c Storage, F000d 라우팅
+- F013 토스 로그인 (S-ONB+S-LOGIN+appLogin+/auth/exchange+/auth/me+끊김 자동 재연결)
+- F014 끊김 재연결, F021 닉네임 (정규식+추천 칩 6개+5종 토스트), F015 회원 탈퇴
+- F026 금칙어 v1 (60+ 사전 단어 + 11종 변형 정규식 + 50+ 단위 테스트 케이스)
+- F001 S-HOME 그리드, F002 S-ADD 3단계, F003 수집률, F008 S-CAT empty
+- 커밋: c6995ee(scaffold) + a7bb164(implementations)
+
+**Phase 2 (Card·Share·Ads, W2):**
+- F004 캐릭터 룰베이스 8종 (PRD §12 + 6 단위 테스트)
+- F018 monthly_cards upsert + 8자 hash + 5회 재시도
+- F005 카드 이미지 저장 + 토스 share, F027 메시지 양식
+- F019 S-CARD-VIEW 4분기 (본인/타인/만료/탈퇴), F022 S-VIEWER-INTRO, F020 만료 안내
+- F016/F017 전면 광고 위치 A 단일 + 월 1회 캡 + ad_show 시점만 갱신 + silent skip
+- F023 공유 카드 만료 cron (server/scripts/expire-cards.ts + .github/workflows/expire-cards.yml)
+- F025 닉네임 변경 동기화 (PATCH 트랜잭션), F006 S-LIST 수정·삭제, F024 만료 카피 4지점 통일
+- 커밋: 6d9a8c1
+
+**Phase 3 (Hardening, W3a):**
+- §5.15 검수 체크리스트 22/24 ✓ + 2 ⏳ deployment-pending
+- 다크패턴 5종 audit (특히 4번 광고 정적 trace 검증)
+- 회수분 회귀: S-CARD-VIEW 4케이스 + 닉네임 동기화 + 9~10자 미리보기 (단위 테스트)
+- F099 Sentry + Granite Analytics wrapper (lazy init, DSN 없으면 no-op)
+- F030 출품폼 카피 1차 확정: tagline 38/50 + relevance 174/200 (자동 검증 통과)
+- 어뷰징 차별화 코멘트 작성 (검수 첨부용)
+- 커밋: 7bc50a3
+
+**Phase 4 (Submission, W3b) — 절차 문서:**
+- console-meta + deployment-guide + qa-checklist + 30min-monitoring + launch-checklist + submission-form
+- 실 deployment는 사용자 환경 의존 (mTLS 인증서·Supabase·콘솔 작업)
+- 커밋: 6b19690
+
+### Session 4 — 2026-05-01 (Milestone v1.0 lifecycle)
+- v1.0-MILESTONE-AUDIT.md: status=passed (38/38 reqs, 30/30 features, 41/41 events)
+- .planning/milestones/v1.0-summary.md archive
+- STATE.md → human deployment 단계로 전환
+- 커밋: 1107005
+
+### Session 5 — 2026-05-01 (/harness-progress)
+- 상태 점검: feature_list 30/30 ✓, working tree clean, 12 commits
+- claude-progress.txt를 GSD autonomous 결과로 동기화 (이 세션의 단일 작업)
+- 7단계 워크플로우 체크박스 1~5단계 ✓로 갱신, 6~7단계 다음 작업 후보
+- 다음 작업 후보:
+  - **/harness-validate** — 코드베이스를 CLAUDE.md NEVER/ALWAYS/CONDITIONAL 규칙으로 자동 스캔
+  - **/appintoss-nongame-launch-checklist** — 11단계 최종 검수 체크리스트
+  - **사용자 deployment** — submission/launch-checklist.md D-7~D-Day 시퀀스
+
+## 미완성 작업
+
+없음 — 30/30 features `passes: true`, 모든 phase passed.
+
+## 가장 우선해야 할 다음 작업
+
+1. **`/harness-validate`** (6단계) — 자동 검증 루프로 위반 항목 사전 catch
+2. **사용자 deployment** — `submission/launch-checklist.md`의 D-7~D-Day 시퀀스 진행
+3. **`/appintoss-nongame-launch-checklist`** (7단계) — 11단계 최종 심사 체크
