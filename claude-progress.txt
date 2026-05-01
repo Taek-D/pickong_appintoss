@@ -1,0 +1,69 @@
+# 픽콩 (pickkong) — 개발 진행 기록
+
+## 프로젝트 정보
+- 앱 이름: 픽콩 (appName: pickkong)
+- 앱 유형: 비게임 (라이프스타일/일상/기록) — TDS 디자인 시스템 필수
+- 브랜드 컬러: #7BD389 (연두/민트)
+- 챌린지: 앱인토스 바이브코딩 챌린지 "귀여운 게 최고야"
+- 출품 마감: 2026-05-24
+- PRD: pickkong_prd_v2.0.md (출품 확정안)
+
+## 핵심 정책 (반려방지 필수 기억)
+- 토스 로그인 **강제** — 우회 경로 없음, 동의 항목 최소화
+- 닉네임 1회 입력 강제 — 한글 완성형 + 영문 + 숫자 (자모 단독 차단)
+- 닉네임 추천 칩 6개 고정: 귀염콩 / 굿즈콩 / 문구콩 / 덕질콩 / 픽콩러 / 수집콩
+- 전면 광고 1지점만 (위치 A: S-CARD 진입 직전), 월 1회 단일 캡, ad_show 시점만 갱신
+- 공유는 토스 share만 (외부 링크 0건), 스킴 /card/{8-hash}
+- 공유 카드 월 만료 (매월 1일 0시 KST 배치), 본인 카드는 영구 유지
+- 만료 사전 안내 — S-CARD 본인 카피 매번 노출
+- 외부 호스팅 자산 0건 (OG 이미지 미사용 — Phase 2)
+- 권한 요청 0건 (토스 로그인만)
+- 다크패턴 5종 부재 (특히 4번 — 예상치 못한 광고)
+- 라이트 모드 단일 톤
+- iframe 사용 금지
+
+## 7단계 워크플로우 진행 상태
+
+- [x] 1단계: 요구사항 정의 (PRD v2.0 출품 확정안 보유)
+- [x] 2단계: 반려방지 초기화 (granite.config.ts + index.html + feature_list.json + claude-progress.txt)
+- [ ] 3단계: SDK 블록 선택 — 다음 작업
+- [ ] 4단계: TDS 디자인 적용 (/appintoss-tds-mobile)
+- [ ] 5단계: 점진적 구현 (W1~W3, /harness-progress 반복)
+- [ ] 6단계: 검증 루프 (/harness-validate)
+- [ ] 7단계: 최종 심사 (/appintoss-nongame-launch-checklist)
+
+## 일정 (잔여 23일)
+
+| 주차 | 기간 | 목표 |
+|---|---|---|
+| W1 | D1~D7 | 핵심 루프 + 로그인 + 닉네임 + 백엔드 + 금칙어 v1 (D7 배포) |
+| W2 | D8~D14 | 결과·서버 카드·공유·광고·만료·탈퇴 + S-NICK-EDIT |
+| W3a | D15~D18 | 검수 직전 점검 + 출품폼 카피 1차 확정 |
+| W3b | D19~D23 | 검수·반려·출품 (D-3까지 출시 승인) |
+
+## SDK 블록 매핑 (3단계 사전 정리)
+
+| 필요 기능 | apps-in-toss-examples-robin 블록 | 대응 스킬 |
+|---|---|---|
+| 토스 로그인 | with-app-login | /appintoss-login |
+| 전면 광고 | with-interstitial-ad | /appintoss-rewarded-ad |
+| 공유 링크 | with-share-link | — |
+| Storage | with-storage | — |
+| 내비게이션바 | with-navigation-bar | — |
+| 뒤로가기 | with-back-event | — |
+| 시나리오(공유 흐름) | scenario-share-viral | — |
+| 시나리오(서버 카드 upsert) | scenario-mission-system | — |
+
+## 세션 기록
+
+### Session 1 — 2026-05-01
+- PRD v2.0 (pickkong_prd_v2.0.md) 분석 완료
+- 프로젝트 상태 감지: 신규 (granite.config.ts/feature_list.json/package.json 모두 없음)
+- /harness-init 실행 — Step 1~5 완료:
+  - granite.config.ts (appName=pickkong, displayName=픽콩, primaryColor=#7BD389)
+  - index.html (viewport user-scalable=no + og 메타 + 한글 title)
+  - feature_list.json (F000 초기화 + 29개 기능 항목, F000만 passes=true)
+  - claude-progress.txt
+- ID 체계: F000 계열(인프라 셋업, F000/F000a~d) + F001~F030(PRD §8 원본 매핑) + F099(모니터링)
+- 다음 작업: 3단계 SDK 블록 선택 후 5단계 점진적 구현 → /harness-progress 호출
+- 우선순위: F000a (Vite 스캐폴드) → F000b (백엔드 스켈레톤) → F013 (토스 로그인) → F021 (닉네임) → F026 (금칙어 v1, D7 배포)

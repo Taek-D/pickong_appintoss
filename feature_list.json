@@ -1,0 +1,382 @@
+{
+  "project": "픽콩",
+  "appName": "pickkong",
+  "appType": "non-game",
+  "brandColor": "#7BD389",
+  "created": "2026-05-01",
+  "prdVersion": "v2.0",
+  "prdPath": "pickkong_prd_v2.0.md",
+  "schedule": {
+    "submitDeadline": "2026-05-24",
+    "weeks": {
+      "W1": "D1~D7: 핵심 루프 + 로그인 + 닉네임 + 백엔드 + 금칙어 v1",
+      "W2": "D8~D14: 결과/서버 카드/공유/광고/만료/탈퇴 + S-NICK-EDIT",
+      "W3a": "D15~D18: 검수 직전 점검 + 출품폼 카피 1차 확정",
+      "W3b": "D19~D23: 검수/반려/출품"
+    }
+  },
+  "features": [
+    {
+      "id": "F000",
+      "category": "infrastructure",
+      "priority": "P0",
+      "description": "프로젝트 초기 세팅 (반려방지)",
+      "steps": [
+        "granite.config.ts (appName=pickkong, displayName=픽콩, primaryColor=#7BD389)",
+        "index.html viewport user-scalable=no + 브랜딩 메타태그",
+        "feature_list.json + claude-progress.txt 초기화"
+      ],
+      "passes": true
+    },
+    {
+      "id": "F000a",
+      "category": "infrastructure",
+      "priority": "P0",
+      "description": "Vite + React 19 + Tailwind 4 프로젝트 스캐폴드",
+      "steps": [
+        "package.json (@apps-in-toss/web-framework 2.0.1)",
+        "tsconfig.json + vite.config.ts",
+        "src/main.tsx + src/App.tsx + globals.css",
+        "src/lib/sdk.ts (dynamic import + isSupported 패턴)"
+      ],
+      "passes": false
+    },
+    {
+      "id": "F007",
+      "category": "ui",
+      "priority": "P1",
+      "description": "S-ONB 온보딩 슬라이드 2~3장 (인트로 화면 패턴)",
+      "prdRef": "§7.2",
+      "steps": ["슬라이드 컴포넌트", "BottomCTA '시작하기'", "권한 요청 0건"],
+      "passes": false
+    },
+    {
+      "id": "F013",
+      "category": "auth",
+      "priority": "P0",
+      "description": "S-LOGIN 토스 로그인 강제 (appLogin + mTLS)",
+      "prdRef": "§5.7, §7.3",
+      "skill": "appintoss-login",
+      "reference": "with-app-login",
+      "steps": ["S-LOGIN 화면", "appLogin 호출", "백엔드 /auth/exchange (mTLS)", "user_key 영속"],
+      "passes": false
+    },
+    {
+      "id": "F014",
+      "category": "auth",
+      "priority": "P0",
+      "description": "로그인 끊김 감지 + 자동 재연결 (바텀시트 금지)",
+      "prdRef": "§5.7",
+      "steps": ["getIsTossLoginIntegratedService 감지", "자동 S-LOGIN 라우팅"],
+      "passes": false
+    },
+    {
+      "id": "F021",
+      "category": "auth",
+      "priority": "P0",
+      "description": "S-NICK 닉네임 입력 + S-NICK-EDIT 변경 (완성형 한글+영문+숫자)",
+      "prdRef": "§5.8, §7.4, §7.5",
+      "steps": [
+        "정규식 ^[가-힣A-Za-z0-9]{1,10}$",
+        "허용 외 문자 자동 무시",
+        "추천 칩 6개 고정 (귀염콩/굿즈콩/문구콩/덕질콩/픽콩러/수집콩)",
+        "POST/PATCH /account/nickname",
+        "설정에서도 동일 추천 칩 6개"
+      ],
+      "passes": false
+    },
+    {
+      "id": "F026",
+      "category": "infrastructure",
+      "priority": "P0",
+      "description": "금칙어 정적 사전 + 정규식 (관리자 사칭 변형 차단)",
+      "prdRef": "§5.11, §10.9",
+      "deadline": "D7",
+      "steps": [
+        "forbidden_nicknames.json",
+        "forbidden_patterns.regex (관리자 사칭 변형)",
+        "백엔드 닉네임 API에서 재검증",
+        "D7 v1 배포 완료"
+      ],
+      "passes": false
+    },
+    {
+      "id": "F015",
+      "category": "auth",
+      "priority": "P0",
+      "description": "회원 탈퇴 / 데이터 삭제 (removeByUserKey + monthly_cards 삭제)",
+      "prdRef": "§5.9",
+      "steps": ["DELETE /account", "removeByUserKey 호출", "Storage 클리어", "S-ONB 라우팅"],
+      "passes": false
+    },
+    {
+      "id": "F000b",
+      "category": "infrastructure",
+      "priority": "P0",
+      "description": "백엔드 스켈레톤 (mTLS + Express/Nest + DB 마이그레이션)",
+      "prdRef": "§10.2, §13.1",
+      "steps": [
+        "/auth/exchange, /auth/me",
+        "/account, /account/nickname",
+        "/cards/{user_key}/{yyyymm}, /cards/{card_id}",
+        "accounts + monthly_cards 테이블"
+      ],
+      "passes": false
+    },
+    {
+      "id": "F000c",
+      "category": "infrastructure",
+      "priority": "P0",
+      "description": "Storage 키 정의 + cute_items 단말 데이터 모델",
+      "prdRef": "§13.2, §13.3",
+      "steps": [
+        "user_key:current, nickname:current",
+        "cute_items:{user_key}",
+        "summary:{user_key}:{ym}",
+        "ad_card_shown:{user_key}:{yyyymm}",
+        "viewer_intro_seen:{user_key}"
+      ],
+      "passes": false
+    },
+    {
+      "id": "F000d",
+      "category": "infrastructure",
+      "priority": "P0",
+      "description": "라우팅 + getSchemeUri 카드 ID 파싱 (공유 진입)",
+      "prdRef": "§6.2, §10.3",
+      "steps": ["스킴 /card/{8-hash} 파싱", "진입 라우팅 분기 6종"],
+      "passes": false
+    },
+    {
+      "id": "F001",
+      "category": "ui",
+      "priority": "P0",
+      "description": "S-HOME 메인 도감 (그리드 + 수집률 + 카드 잠금 안내)",
+      "prdRef": "§7.6",
+      "steps": [
+        "도감 그리드 8칸",
+        "이번 달 수집률 표시",
+        "주간 진행 텍스트",
+        "이번 달 카드 보기 버튼 (조건부)",
+        "BottomCTA 오늘의 콩 줍기"
+      ],
+      "passes": false
+    },
+    {
+      "id": "F002",
+      "category": "logic",
+      "priority": "P0",
+      "description": "S-ADD 콩 등록 3단계 + S-DONE 완료",
+      "prdRef": "§7.7, §7.8",
+      "steps": ["카테고리 → 금액 → 이모지·메모", "30초 내 완료", "cute_items 저장", "S-DONE 라우팅"],
+      "passes": false
+    },
+    {
+      "id": "F003",
+      "category": "logic",
+      "priority": "P0",
+      "description": "수집률·주간 진행 계산",
+      "prdRef": "§7.6",
+      "steps": ["월별 카테고리 집계", "주간 카운트", "summary 캐시"],
+      "passes": false
+    },
+    {
+      "id": "F004",
+      "category": "logic",
+      "priority": "P0",
+      "description": "월간 캐릭터 룰 (서버·클라 동일)",
+      "prdRef": "§12",
+      "steps": ["8가지 character_type 룰 구현", "서버 동일 로직"],
+      "passes": false
+    },
+    {
+      "id": "F018",
+      "category": "logic",
+      "priority": "P0",
+      "description": "서버 카드 저장 + 8자 hash card_id (monthly_cards upsert)",
+      "prdRef": "§7.11, §10.5, §13.1",
+      "steps": [
+        "POST /cards/{user_key}/{yyyymm} upsert",
+        "[a-z0-9]{8} 충돌 시 5회 재시도",
+        "card_status active/dirty",
+        "본인 진입 시 재계산"
+      ],
+      "passes": false
+    },
+    {
+      "id": "F024",
+      "category": "ui",
+      "priority": "P0",
+      "description": "만료 사전 안내 카피 분기 (S-CARD/S-SHARE/메시지/S-CARD-VIEW)",
+      "prdRef": "§5.10",
+      "steps": [
+        "S-CARD 본인 카피 매번 노출 ('친구는 이번 달 안에만 볼 수 있어요')",
+        "S-SHARE 시트 상단 통일 카피",
+        "공유 메시지 본문 끝 카피",
+        "S-CARD-VIEW 만료 헤드라인 통일"
+      ],
+      "passes": false
+    },
+    {
+      "id": "F005",
+      "category": "share",
+      "priority": "P0",
+      "description": "S-CARD 결과 카드 이미지 저장 + 토스 share",
+      "prdRef": "§7.11, §7.14",
+      "reference": "with-share-link",
+      "steps": [
+        "saveBase64Data 이미지 저장",
+        "getTossShareLink + share",
+        "scheme /card/{card_id}",
+        "외부 SNS 호출 금지"
+      ],
+      "passes": false
+    },
+    {
+      "id": "F027",
+      "category": "share",
+      "priority": "P0",
+      "description": "공유 메시지 본문 양식 ({닉네임}의 이번 달 카드예요. 이번 달 안에만 볼 수 있어요.)",
+      "prdRef": "§7.14, §16",
+      "steps": ["메시지 페이로드 양식", "닉네임 9~10자 미리보기 컷오프 검증"],
+      "passes": false
+    },
+    {
+      "id": "F019",
+      "category": "share",
+      "priority": "P0",
+      "description": "S-CARD-VIEW 공유 카드 열람 (본인/타인/만료/탈퇴자 4분기)",
+      "prdRef": "§7.13",
+      "steps": [
+        "GET /cards/{card_id} (인증 필수)",
+        "본인 active 분기",
+        "타인 active 분기",
+        "만료/삭제/탈퇴 안내 분기",
+        "광고 없음"
+      ],
+      "passes": false
+    },
+    {
+      "id": "F022",
+      "category": "ui",
+      "priority": "P0",
+      "description": "S-VIEWER-INTRO 열람자용 1장 온보딩 (신규 가입자만 1회)",
+      "prdRef": "§7.12",
+      "steps": ["is_first_login 체크", "viewer_intro_seen 플래그", "광고 없음"],
+      "passes": false
+    },
+    {
+      "id": "F020",
+      "category": "share",
+      "priority": "P0",
+      "description": "공유 만료/삭제/탈퇴자 안내 화면",
+      "prdRef": "§5.10, §7.13",
+      "steps": ["만료 헤드라인 ('이 카드는 지난 달 이야기예요')", "픽콩 시작하기 CTA"],
+      "passes": false
+    },
+    {
+      "id": "F016",
+      "category": "ads",
+      "priority": "P0",
+      "description": "전면형 광고 단일 지점 (위치 A: S-CARD 진입 직전)",
+      "prdRef": "§5.6, §7.9",
+      "skill": "appintoss-rewarded-ad",
+      "reference": "with-interstitial-ad",
+      "steps": [
+        "IntegratedAd.load() 1.5s 타임아웃",
+        "성공 → show() → 광고 닫힘 시 S-CARD",
+        "실패/타임아웃 → 즉시 S-CARD (silent skip)",
+        "공유·열람자 온보딩에 광고 없음"
+      ],
+      "passes": false
+    },
+    {
+      "id": "F017",
+      "category": "ads",
+      "priority": "P0",
+      "description": "광고 캡 관리 (월 1회 단일 캡, ad_show 시점만 갱신)",
+      "prdRef": "§5.6",
+      "steps": [
+        "ad_card_shown:{user_key}:{yyyymm} 캡 키",
+        "ad_show 시점에만 갱신",
+        "로드 실패/skip/종료 시 갱신 없음"
+      ],
+      "passes": false
+    },
+    {
+      "id": "F023",
+      "category": "infrastructure",
+      "priority": "P0",
+      "description": "공유 카드 월 만료 배치 (매월 1일 0시 KST cron)",
+      "prdRef": "§5.10, §10.8",
+      "steps": [
+        "cron 매월 1일 0시 KST",
+        "UPDATE share_status='expired' WHERE month < this_month",
+        "본인 card_status='active' 영구 유지",
+        "1시간 단위 6회 재시도 + 알람"
+      ],
+      "passes": false
+    },
+    {
+      "id": "F025",
+      "category": "infrastructure",
+      "priority": "P0",
+      "description": "닉네임 변경 시 현재 달 active 카드 동기화 (트랜잭션 1줄)",
+      "prdRef": "§5.8, §10.7",
+      "steps": [
+        "PATCH /account/nickname 트랜잭션",
+        "UPDATE monthly_cards SET nickname_snapshot WHERE user_key + current_month + active",
+        "과거 카드 미갱신 (시점성 보존)"
+      ],
+      "passes": false
+    },
+    {
+      "id": "F006",
+      "category": "logic",
+      "priority": "P1",
+      "description": "S-LIST 기록 수정·삭제 (단말+서버 동기화)",
+      "prdRef": "§7.15",
+      "steps": ["최신순 정렬", "카테고리 필터", "수정/삭제 시트", "같은 달 카드 dirty"],
+      "passes": false
+    },
+    {
+      "id": "F008",
+      "category": "ui",
+      "priority": "P1",
+      "description": "빈/완료 상태 UX + S-CAT 카테고리 상세",
+      "prdRef": "§7.10",
+      "steps": ["empty 카피", "S-CAT 헤더 + 리스트"],
+      "passes": false
+    },
+    {
+      "id": "F030",
+      "category": "infrastructure",
+      "priority": "P0",
+      "description": "출품폼 카피 양식 (한 줄 50자 / 연관성 200자) + 글자수 자동 검증",
+      "prdRef": "§14.2, §16",
+      "deadline": "W3a (D15~D18)",
+      "steps": [
+        "한 줄: 오늘 마음에 든 귀여움을 하나씩 픽해 모으는 나만의 취향 도감이에요. (35자)",
+        "연관성: 약 196자 카피 보존",
+        "출품 직전 W3b 토씨 단위 점검"
+      ],
+      "passes": false
+    },
+    {
+      "id": "F099",
+      "category": "infrastructure",
+      "priority": "P0",
+      "description": "Sentry + Granite Analytics 적재 (이벤트 §9.2)",
+      "prdRef": "§9, §17.3",
+      "steps": ["Sentry 클라+서버", "이벤트 택소노미 적용", "광고 직후 card_view 도달률 알람"],
+      "passes": false
+    }
+  ],
+  "submissionMeta": {
+    "appName": "픽콩",
+    "tagline": "귀여운 취향을 하나씩 모으는 나만의 도감",
+    "category": "라이프스타일 / 일상 / 기록",
+    "keywords": ["귀여움", "도감", "취향", "굿즈", "문구", "선물", "덕질", "간식", "기록", "수집"],
+    "ageRating": "전체"
+  }
+}
