@@ -1,6 +1,5 @@
 // S-CARD — 본인 월간 결과 카드 (PRD §7.11)
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Top } from '@/components/Top';
 import { BottomCTAStack } from '@/components/BottomCTA';
 import { CharacterIllustration } from '@/lib/character-illustration';
@@ -26,7 +25,6 @@ interface CardUpsertResponse {
 }
 
 export function Card(): JSX.Element {
-  const nav = useNavigate();
   const { userKey, nickname } = useSession();
   const { items } = useItems();
   const summary = useMemo(() => useItems.getState().summary(), [items]);
@@ -91,14 +89,7 @@ export function Card(): JSX.Element {
 
   return (
     <div className="safe-area flex h-full flex-col pb-40">
-      <Top
-        title=""
-        left={
-          <button onClick={() => nav('/', { replace: true })} aria-label="닫기" className="text-[18px]">
-            ✕
-          </button>
-        }
-      />
+      <Top title="" />
 
       <div className="flex flex-1 flex-col items-center px-6">
         <p className="mt-2 text-[14px] text-[var(--color-text-muted)]">

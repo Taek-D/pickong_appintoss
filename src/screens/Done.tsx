@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Top } from '@/components/Top';
-import { BottomCTA, BottomCTAStack } from '@/components/BottomCTA';
+import { BottomCTAStack } from '@/components/BottomCTA';
 import { useItems } from '@/state/items';
 import { track } from '@/lib/analytics';
 import { CATEGORIES, COPY } from '@shared/constants';

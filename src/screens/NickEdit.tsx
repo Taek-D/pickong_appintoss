@@ -3,7 +3,7 @@
 import { useEffect, useState, type ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Top } from '@/components/Top';
-import { BottomCTA, BottomCTAStack } from '@/components/BottomCTA';
+import { BottomCTAStack } from '@/components/BottomCTA';
 import { toast } from '@/components/Toast';
 import { api, APIError } from '@/lib/api';
 import { useSession } from '@/state/session';
@@ -108,12 +108,7 @@ export function NickEdit(): JSX.Element {
 
   return (
     <div className="safe-area flex h-full flex-col">
-      <Top
-        title=""
-        left={
-          <button onClick={() => nav(-1)} aria-label="뒤로" className="text-[18px]">←</button>
-        }
-      />
+      <Top title="" />
       <div className="flex flex-1 flex-col gap-6 px-6 pt-4">
         <div>
           <h1 className="text-[24px] font-bold">{COPY.nick_headline_edit}</h1>

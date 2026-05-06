@@ -106,14 +106,7 @@ export function CardView(): JSX.Element {
 
   return (
     <div className="safe-area flex h-full flex-col pb-32">
-      <Top
-        title=""
-        left={
-          <button onClick={() => nav('/', { replace: true })} aria-label="닫기" className="text-[18px]">
-            ✕
-          </button>
-        }
-      />
+      <Top title="" />
       <div className="flex flex-1 flex-col items-center px-6">
         <p className="mt-2 text-[14px] text-[var(--color-text-muted)]">
           {card.nickname_snapshot}

@@ -28,18 +28,7 @@ export function CategoryDetail(): JSX.Element {
 
   return (
     <div className="safe-area flex h-full flex-col pb-32">
-      <Top
-        title={cat.label}
-        left={
-          <button
-            onClick={() => nav(-1)}
-            aria-label="뒤로"
-            className="text-[18px]"
-          >
-            ←
-          </button>
-        }
-      />
+      <Top title={cat.label} />
 
       {list.length === 0 ? (
         <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">

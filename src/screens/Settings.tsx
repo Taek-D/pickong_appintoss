@@ -56,12 +56,7 @@ export function Settings(): JSX.Element {
 
   return (
     <div className="safe-area flex h-full flex-col">
-      <Top
-        title="설정"
-        left={
-          <button onClick={() => nav(-1)} aria-label="뒤로" className="text-[18px]">←</button>
-        }
-      />
+      <Top title="설정" />
       <div className="px-6 pt-4">
         <p className="text-[14px] text-[var(--color-text-muted)]">
           {nickname ? `${nickname}님` : ''}

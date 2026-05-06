@@ -50,8 +50,11 @@ cardsRoutes.post('/:user_key/:yyyymm', requireAuth(), async (c) => {
     });
   }
 
+  const db = sql;
+  const breakdownJson = breakdown as Record<string, number>;
+
   // 1. 기존 카드 있으면 그 card_id 사용 (UNIQUE user_key+month)
-  const existing = await sql<{ card_id: string }[]>`
+  const existing = await db<{ card_id: string }[]>`
     SELECT card_id FROM monthly_cards
     WHERE user_key = ${userKey} AND month = ${yyyymm}
   `;
@@ -59,12 +62,12 @@ cardsRoutes.post('/:user_key/:yyyymm', requireAuth(), async (c) => {
   let cardId: string;
   if (existing.length > 0 && existing[0]) {
     cardId = existing[0].card_id;
-    await sql`
+    await db`
       UPDATE monthly_cards SET
         total_count = ${body.total_count},
         total_amount = ${body.total_amount},
         top_category = ${top},
-        category_breakdown = ${sql.json(breakdown)},
+        category_breakdown = ${db.json(breakdownJson)},
         character_type = ${character},
         nickname_snapshot = ${body.nickname_snapshot},
         card_status = 'active',
@@ -75,14 +78,14 @@ cardsRoutes.post('/:user_key/:yyyymm', requireAuth(), async (c) => {
   } else {
     cardId = await withUniqueCardId<string>(async (id) => {
       try {
-        await sql`
+        await db`
           INSERT INTO monthly_cards (
             card_id, user_key, month, total_count, total_amount,
             top_category, category_breakdown, character_type, nickname_snapshot
           )
           VALUES (
             ${id}, ${userKey}, ${yyyymm}, ${body.total_count}, ${body.total_amount},
-            ${top}, ${sql.json(breakdown)}, ${character}, ${body.nickname_snapshot}
+            ${top}, ${db.json(breakdownJson)}, ${character}, ${body.nickname_snapshot}
           )
         `;
         return id;

@@ -69,13 +69,15 @@ export function AddFlow(): JSX.Element {
       <Top
         title={`${step}/3`}
         left={
-          <button
-            onClick={() => (step === 1 ? nav(-1) : setStep((s) => (s - 1) as 1 | 2 | 3))}
-            className="text-[18px] text-[var(--color-text)]"
-            aria-label="뒤로"
-          >
-            ←
-          </button>
+          step > 1 ? (
+            <button
+              onClick={() => setStep((s) => (s - 1) as 1 | 2 | 3)}
+              className="text-[14px] font-medium text-[var(--color-text-muted)]"
+              aria-label="이전 단계"
+            >
+              이전
+            </button>
+          ) : null
         }
       />
 

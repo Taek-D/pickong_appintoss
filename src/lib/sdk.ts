@@ -21,7 +21,7 @@ export async function appLogin(): Promise<{ code: string } | { mock: true; user_
   if (sdk?.appLogin && typeof sdk.appLogin === 'function') {
     const isSupported = (sdk.appLogin as { isSupported?: () => boolean }).isSupported;
     if (typeof isSupported === 'function' && isSupported() === true) {
-      const result = await (sdk.appLogin as () => Promise<{ code: string }>)();
+      const result = await (sdk.appLogin as unknown as () => Promise<{ code: string }>)();
       return result;
     }
   }
@@ -76,9 +76,9 @@ export const Storage = {
   },
   async clear(): Promise<void> {
     const sdk = await tryImportSdk();
-    if (sdk?.Storage?.clear && typeof sdk.Storage.clear === 'function') {
+    if (sdk?.Storage?.clearItems && typeof sdk.Storage.clearItems === 'function') {
       try {
-        await (sdk.Storage.clear as () => Promise<void>)();
+        await (sdk.Storage.clearItems as () => Promise<void>)();
         return;
       } catch {
         /* fall through */
@@ -122,7 +122,7 @@ export async function saveBase64Data(payload: { base64: string; filename: string
   if (sdk?.saveBase64Data && typeof sdk.saveBase64Data === 'function') {
     const isSupported = (sdk.saveBase64Data as { isSupported?: () => boolean }).isSupported;
     if (typeof isSupported === 'function' && isSupported() === true) {
-      await (sdk.saveBase64Data as (p: typeof payload) => Promise<void>)(payload);
+      await (sdk.saveBase64Data as unknown as (p: { data: string; fileName: string; mimeType: string }) => Promise<void>)({ data: payload.base64, fileName: payload.filename, mimeType: 'image/png' });
       return;
     }
   }
@@ -142,7 +142,7 @@ export async function getSchemeUri(): Promise<string | null> {
     const isSupported = (sdk.getSchemeUri as { isSupported?: () => boolean }).isSupported;
     if (typeof isSupported === 'function' && isSupported() === true) {
       try {
-        return await (sdk.getSchemeUri as () => Promise<string | null>)();
+        return await (sdk.getSchemeUri as unknown as () => Promise<string | null>)();
       } catch {
         return null;
       }

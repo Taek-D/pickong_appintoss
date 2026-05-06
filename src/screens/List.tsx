@@ -1,6 +1,5 @@
 // S-LIST — 기록 목록 + 카테고리 필터 + 수정/삭제 시트 (PRD §7.15)
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Top } from '@/components/Top';
 import { BottomSheet } from '@/components/BottomSheet';
 import { useItems } from '@/state/items';
@@ -11,7 +10,6 @@ import { cn } from '@/lib/cn';
 import type { CategoryId, CuteItem } from '@shared/types';
 
 export function List(): JSX.Element {
-  const nav = useNavigate();
   const { items, remove } = useItems();
   const [filter, setFilter] = useState<CategoryId | 'all'>('all');
   const [actionTarget, setActionTarget] = useState<CuteItem | null>(null);
@@ -37,10 +35,7 @@ export function List(): JSX.Element {
 
   return (
     <div className="safe-area flex h-full flex-col">
-      <Top
-        title="내 기록"
-        left={<button onClick={() => nav(-1)} aria-label="뒤로" className="text-[18px]">←</button>}
-      />
+      <Top title="내 기록" />
 
       {/* 카테고리 필터 (가로 스크롤) */}
       <div className="overflow-x-auto px-4 py-3">

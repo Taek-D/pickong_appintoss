@@ -13,7 +13,6 @@ export async function initSentry(): Promise<void> {
     return;
   }
   try {
-    // @ts-expect-error — peer dep, optional
     const Sentry = await import('@sentry/react');
     Sentry.init({
       dsn,
