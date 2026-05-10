@@ -44,6 +44,7 @@ pnpm-debug.log*
 .omc/
 .agents/
 .claude/worktrees/
+.claude/settings.local.json
 
 # coverage
 coverage/
