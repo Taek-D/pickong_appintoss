@@ -16,7 +16,7 @@ export function App(): JSX.Element {
     void useShareEntry.getState().detect();
     setUnauthenticatedHandler(() => {
       void useSession.getState().clear();
-      window.location.href = '/login';
+      void router.navigate('/login');
     });
   }, [hydrate]);
 
@@ -28,8 +28,8 @@ export function App(): JSX.Element {
   // SDK getSchemeUri 결과가 늦게 도착할 수도 있어 redirect 보강
   useEffect(() => {
     const unsub = useShareEntry.subscribe((s) => {
-      if (s.cardId && !window.location.pathname.startsWith(`/card/${s.cardId}`)) {
-        window.location.replace(`/card/${s.cardId}`);
+      if (s.cardId && !globalThis.location.pathname.startsWith(`/card/${s.cardId}`)) {
+        void router.navigate(`/card/${s.cardId}`, { replace: true });
       }
     });
     return unsub;

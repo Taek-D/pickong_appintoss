@@ -40,6 +40,8 @@ pnpm-debug.log*
 # tooling caches (do NOT commit)
 .bkit/
 .omc/
+.agents/
+.claude/worktrees/
 
 # coverage
 coverage/

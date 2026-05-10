@@ -1,5 +1,5 @@
 // 라우터 — Phase 1 + 2 전체 (PRD §6.1, §6.2)
-import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom';
+import { createBrowserRouter, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Onboarding } from './screens/Onboarding';
 import { Login } from './screens/Login';
@@ -39,16 +39,17 @@ function AuthGate(): JSX.Element {
 // 공유 링크 진입자 — 신규 가입자면 viewer-intro 경유
 function ShareCardGate(): JSX.Element {
   const { userKey, nickname } = useSession();
+  const location = useLocation();
   const [seen, setSeen] = useState<boolean | null>(null);
   useEffect(() => {
     if (userKey) void viewerIntro.wasSeen(userKey).then(setSeen);
   }, [userKey]);
 
-  if (!userKey) return <Navigate to={`/login?from=share&next=${encodeURIComponent(window.location.pathname)}`} replace />;
-  if (!nickname) return <Navigate to={`/nick?from=share&next=${encodeURIComponent(window.location.pathname)}`} replace />;
+  if (!userKey) return <Navigate to={`/login?from=share&next=${encodeURIComponent(location.pathname)}`} replace />;
+  if (!nickname) return <Navigate to={`/nick?from=share&next=${encodeURIComponent(location.pathname)}`} replace />;
   if (seen === null) return <div className="p-8 text-center">...</div>;
   if (!seen) {
-    const hash = window.location.pathname.split('/card/')[1];
+    const hash = location.pathname.split('/card/')[1];
     return <Navigate to={`/viewer-intro/${hash}`} replace />;
   }
   return <CardView />;

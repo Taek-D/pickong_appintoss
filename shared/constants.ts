@@ -91,8 +91,10 @@ export const COPY = {
   card_owner_header: (character: string) => `이번 달 나는 ${character}`,
 
   // 공유 메시지 양식 (PRD §16, 30자 내외)
-  share_message: (nickname: string) =>
-    `${nickname}의 이번 달 카드예요. 이번 달 안에만 볼 수 있어요.`,
+  share_message: (nickname: string) => {
+    const full = `${nickname}의 이번 달 카드예요. 이번 달 안에만 볼 수 있어요.`;
+    return full.length <= 35 ? full : `${nickname}의 이번 달 카드예요.`;
+  },
 
   viewer_intro_headline: (nickname: string) => `${nickname}이(가) 이번 달 카드를 보냈어요`,
   viewer_intro_body: '픽콩은 좋아한 귀여운 것을 모으는 도감이에요',

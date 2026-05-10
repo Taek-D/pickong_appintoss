@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit",
     "migrate": "tsx --env-file=../.env src/migrate.ts",
     "expire": "tsx --env-file=../.env src/scripts/expire-cards.ts",
-    "test": "node --test --import tsx 'test/**/*.test.ts'"
+    "test": "node --test --import tsx test/character-rule.test.ts test/forbidden.test.ts test/share-message.test.ts"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",

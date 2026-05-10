@@ -24,7 +24,7 @@ export const useShareEntry = create<ShareEntryState>((set, get) => ({
     }
     // URL fallback (browser dev): /card/:hash
     if (typeof window !== 'undefined') {
-      const m = window.location.pathname.match(/^\/card\/([a-z0-9]{4,16})$/i);
+      const m = globalThis.location.pathname.match(/^\/card\/([a-z0-9]{4,16})$/i);
       if (m && m[1]) {
         set({ cardId: m[1], detected: true });
         return;

@@ -110,7 +110,7 @@ export type EventName =
   | 'done_view' | 'done_press_home' | 'done_press_more'
   | 'cat_view' | 'cat_press_add'
   | 'ad_eligible' | 'ad_load_request' | 'ad_load_success' | 'ad_load_fail'
-  | 'ad_show' | 'ad_dismiss' | 'ad_skip_due_to_fail'
+  | 'ad_show' | 'ad_impression' | 'ad_clicked' | 'ad_dismiss' | 'ad_complete' | 'ad_skip_due_to_fail'
   | 'card_view' | 'card_view_expiry_notice_view'
   | 'card_upsert_success' | 'card_upsert_fail'
   | 'card_press_save' | 'card_press_share'

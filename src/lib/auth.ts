@@ -82,7 +82,7 @@ export function useEnsureLoggedIn(): { checked: boolean } {
       } catch (err) {
         if (cancelled) return;
         if (err instanceof APIError && err.status === 401) {
-          track('login_disconnect_detected', { screen: window.location.pathname });
+          track('login_disconnect_detected', { screen: globalThis.location.pathname });
           toast(COPY.login_disconnect);
           nav('/login', { replace: true });
         } else {

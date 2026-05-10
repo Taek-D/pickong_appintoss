@@ -97,8 +97,7 @@ export async function getTossShareLink(scheme: string): Promise<string> {
       return await (sdk.getTossShareLink as (s: string) => Promise<string>)(scheme);
     }
   }
-  // mock
-  return `https://toss-mock.example.com${scheme}`;
+  return scheme;
 }
 
 export async function share(payload: { message: string; url: string }): Promise<void> {
@@ -150,8 +149,7 @@ export async function getSchemeUri(): Promise<string | null> {
   }
   // mock — URL search ?card=xxxxxxxx
   if (typeof window !== 'undefined') {
-    const url = new URL(window.location.href);
-    const card = url.searchParams.get('card');
+    const card = new URLSearchParams(globalThis.location.search).get('card');
     if (card) return `/card/${card}`;
   }
   return null;

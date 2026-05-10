@@ -41,7 +41,7 @@ export function normalize(input: string): string {
   return input
     .normalize('NFKC')
     .toLowerCase()
-    .replace(/[\s\W_]+/g, '');
+    .replace(/[^\p{L}\p{N}]+/gu, '');
 }
 
 export function checkNickname(input: string): ForbiddenResult {
