@@ -5,8 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import { Top } from '@/components/Top';
 import { BottomCTAStack } from '@/components/BottomCTA';
 import { toast } from '@/components/Toast';
-import { api, APIError } from '@/lib/api';
+import { invokePickkong } from '@/services/supabaseClient';
 import { useSession } from '@/state/session';
+import { clearAuthTokens } from '@/lib/authStorage';
 import { track } from '@/lib/analytics';
 import { cn } from '@/lib/cn';
 import {
@@ -16,7 +17,7 @@ import {
   JAMO_ONLY_REGEX,
   COPY,
 } from '@shared/constants';
-import type { NicknameSuccess, NicknameFailure, NicknameErrorCode } from '@shared/types';
+import type { NicknameErrorCode } from '@shared/types';
 
 const TOAST_BY_CODE: Record<NicknameErrorCode, string> = {
   length: COPY.nick_toast_length,
@@ -52,16 +53,17 @@ export function NickEdit(): JSX.Element {
   }, []);
 
   function onChange(e: ChangeEvent<HTMLInputElement>): void {
+    // ⚠️ RN WebView 에서 composition 이벤트가 보장되지 않아 onChange 에서 sanitize 하면 한글 자모가
+    // 매번 제거되어 IME 조합 자체가 깨짐. 차단은 onBlur / save() 시점의 NICKNAME_REGEX 로 위임.
     const raw = e.target.value;
-    const { cleaned, reasons } = sanitize(raw);
-    if (reasons.size > 0) for (const r of reasons) track('nickedit_input_blocked_char', { reason: r });
-    if (cleaned.length > NICKNAME_MAX_LEN) {
-      track('nickedit_input_blocked_char', { reason: 'length' });
-      setValue(cleaned.slice(0, NICKNAME_MAX_LEN));
-      return;
-    }
-    setValue(cleaned);
+    setValue(raw.slice(0, NICKNAME_MAX_LEN));
     setUsedSuggestion(false);
+  }
+
+  function onBlur(): void {
+    const { cleaned, reasons } = sanitize(value);
+    if (reasons.size > 0) for (const r of reasons) track('nickedit_input_blocked_char', { reason: r });
+    if (cleaned !== value) setValue(cleaned.slice(0, NICKNAME_MAX_LEN));
   }
 
   function pick(s: string): void {
@@ -79,13 +81,24 @@ export function NickEdit(): JSX.Element {
 
     setLoading(true);
     try {
-      const res = await api<NicknameSuccess | NicknameFailure>('/account/nickname', {
-        method: 'PATCH',
-        body: JSON.stringify({ nickname: value }),
+      const { error } = await invokePickkong<{ ok: true }>('pickkong-account', {
+        action: 'change_nickname',
+        nickname: value,
       });
-      if (res.ok === false) {
-        toast(TOAST_BY_CODE[res.error_code] ?? COPY.toast_save_fail);
-        track('set_change_nickname_fail', { error_code: res.error_code });
+      if (error) {
+        console.warn('[change_nickname] failed', error);
+        // 401 (토큰 만료/무효) — 토스 세션 끊김 안내 + 강제 재로그인
+        if (error.status === 401 || error.error_code === 'unauthenticated') {
+          await clearAuthTokens();
+          toast(COPY.login_disconnect);
+          track('set_change_nickname_fail', { error_code: 'unauthenticated' });
+          nav('/login', { replace: true });
+          return;
+        }
+        const code: NicknameErrorCode =
+          error.error_code in TOAST_BY_CODE ? (error.error_code as NicknameErrorCode) : 'network';
+        toast(TOAST_BY_CODE[code]);
+        track('set_change_nickname_fail', { error_code: code });
         return;
       }
       await setNickname(value);
@@ -93,12 +106,9 @@ export function NickEdit(): JSX.Element {
       toast(COPY.nick_changed_toast);
       nav(-1);
     } catch (err) {
-      const code: NicknameErrorCode =
-        err instanceof APIError && err.errorCode in TOAST_BY_CODE
-          ? (err.errorCode as NicknameErrorCode)
-          : 'network';
+      const code: NicknameErrorCode = 'network';
       toast(TOAST_BY_CODE[code]);
-      track('set_change_nickname_fail', { error_code: code });
+      track('set_change_nickname_fail', { error_code: code, message: err instanceof Error ? err.message : 'unknown' });
     } finally {
       setLoading(false);
     }
@@ -118,6 +128,7 @@ export function NickEdit(): JSX.Element {
           <input
             value={value}
             onChange={onChange}
+            onBlur={onBlur}
             inputMode="text"
             maxLength={NICKNAME_MAX_LEN}
             className="flex-1 bg-transparent text-[18px] outline-none"
@@ -156,7 +167,7 @@ export function NickEdit(): JSX.Element {
         <button
           onClick={save}
           disabled={!canSubmit}
-          className="h-14 w-full rounded-2xl bg-[var(--color-primary)] text-[16px] font-semibold text-white disabled:opacity-50"
+          className="h-14 w-full rounded-2xl bg-[var(--color-primary)] text-[16px] font-semibold text-[var(--color-on-primary)] disabled:opacity-50"
         >
           {loading ? '...' : COPY.nick_cta_edit}
         </button>

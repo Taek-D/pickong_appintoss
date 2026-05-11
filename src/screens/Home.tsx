@@ -20,17 +20,23 @@ export function Home(): JSX.Element {
   const collection = Math.round(summary.collection_rate * 100);
   const weekLeft = Math.max(0, summary.weekly_target - summary.this_week_count);
 
+  // home_view 추적 — loaded/userKey 가 안정적으로 정해지면 1회.
+  // (이전 deps 에 summary.* 가 들어가서 zustand 리렌더 시 매번 새 객체로 평가 → setAdAlreadyShown 무한 루프 유발)
   useEffect(() => {
+    if (!loaded) return;
     track('home_view', {
-      is_first_visit: !loaded || items.length === 0,
-      collected_count: summary.total_count,
-      month: summary.ym,
+      is_first_visit: items.length === 0,
+      collected_count: useItems.getState().summary().total_count,
+      month: useItems.getState().summary().ym,
     });
-    if (userKey) {
-      const yyyymm = ymOf(new Date()).replace('-', '');
-      void adCap.wasShown(userKey, yyyymm).then(setAdAlreadyShown);
-    }
-  }, [loaded, items.length, summary.total_count, summary.ym, userKey]);
+  }, [loaded, userKey]);
+
+  // 광고 노출 여부 조회 — userKey 1회.
+  useEffect(() => {
+    if (!userKey) return;
+    const yyyymm = ymOf(new Date()).replace('-', '');
+    void adCap.wasShown(userKey, yyyymm).then(setAdAlreadyShown);
+  }, [userKey]);
 
   const cardEligible = summary.total_count >= CARD_UNLOCK_THRESHOLD;
 
@@ -118,7 +124,7 @@ export function Home(): JSX.Element {
                   {cat.label}
                 </span>
                 {filled && (
-                  <span className="rounded-full bg-white/70 px-2 py-0.5 text-[12px] font-medium tabular-nums">
+                  <span className="rounded-full bg-[var(--color-card-chip)] px-2 py-0.5 text-[12px] font-medium tabular-nums">
                     {count}콩
                   </span>
                 )}

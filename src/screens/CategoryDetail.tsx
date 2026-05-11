@@ -1,18 +1,27 @@
 // S-CAT — 카테고리 상세 (PRD §7.10)
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Top } from '@/components/Top';
 import { BottomCTA } from '@/components/BottomCTA';
 import { useItems } from '@/state/items';
 import { track } from '@/lib/analytics';
-import { CATEGORIES, COPY } from '@shared/constants';
+import { CATEGORIES, COPY, ymOf } from '@shared/constants';
 import type { CategoryId } from '@shared/types';
 
 export function CategoryDetail(): JSX.Element {
   const nav = useNavigate();
   const { id } = useParams<{ id: string }>();
   const cat = CATEGORIES.find((c) => c.id === (id as CategoryId));
-  const list = id ? useItems((s) => s.byCategory(id as CategoryId)) : [];
+  // ⚠️ 무한 리렌더 fix: `useItems((s) => s.byCategory(...))` 는 매 렌더마다 새 array 를 반환해서
+  // zustand 가 변경 감지 → 또 리렌더 → 또 새 array... 무한 루프. items 만 구독하고 useMemo 로 derive.
+  const items = useItems((s) => s.items);
+  const list = useMemo(() => {
+    if (!id) return [];
+    const ym = ymOf(new Date());
+    return items.filter(
+      (it) => it.category === (id as CategoryId) && ymOf(new Date(it.created_at)) === ym,
+    );
+  }, [items, id]);
 
   useEffect(() => {
     if (cat) track('cat_view', { category: cat.id });

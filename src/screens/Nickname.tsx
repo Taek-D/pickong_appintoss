@@ -8,8 +8,9 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { BottomCTA } from '@/components/BottomCTA';
 import { Top } from '@/components/Top';
 import { toast } from '@/components/Toast';
-import { api, APIError } from '@/lib/api';
+import { invokePickkong } from '@/services/supabaseClient';
 import { useSession } from '@/state/session';
+import { clearAuthTokens } from '@/lib/authStorage';
 import { track } from '@/lib/analytics';
 import { cn } from '@/lib/cn';
 import {
@@ -19,7 +20,7 @@ import {
   JAMO_ONLY_REGEX,
   COPY,
 } from '@shared/constants';
-import type { NicknameSuccess, NicknameFailure, NicknameErrorCode } from '@shared/types';
+import type { NicknameErrorCode } from '@shared/types';
 
 // 입력 단계 자동 무시 — 한글 완성형(가-힣) + 영문 + 숫자만 keep
 function sanitizeInput(raw: string): { cleaned: string; blockedReasons: Set<string> } {
@@ -65,20 +66,20 @@ export function Nickname(): JSX.Element {
   }, [params]);
 
   function onChange(e: ChangeEvent<HTMLInputElement>): void {
+    // ⚠️ RN WebView 에서 composition 이벤트가 보장되지 않아 onChange 에서 sanitize 하면 한글 자모가
+    // 매번 제거되어 IME 조합 자체가 깨짐. 차단은 onBlur / save() 시점의 NICKNAME_REGEX 로 위임.
     const raw = e.target.value;
-    const { cleaned, blockedReasons } = sanitizeInput(raw);
-    if (blockedReasons.size > 0) {
-      for (const r of blockedReasons) {
-        track('nick_input_blocked_char', { reason: r });
-      }
-    }
-    if (cleaned.length > NICKNAME_MAX_LEN) {
-      track('nick_input_blocked_char', { reason: 'length' });
-      setValue(cleaned.slice(0, NICKNAME_MAX_LEN));
-      return;
-    }
-    setValue(cleaned);
+    setValue(raw.slice(0, NICKNAME_MAX_LEN));
     setUsedSuggestion(false);
+  }
+
+  function onBlur(): void {
+    // 포커스 해제 시점에 한 번 정제 (이모지/특수문자 제거, 자모는 그대로 두어 NICKNAME_REGEX 가 차단).
+    const { cleaned, blockedReasons } = sanitizeInput(value);
+    if (blockedReasons.size > 0) {
+      for (const r of blockedReasons) track('nick_input_blocked_char', { reason: r });
+    }
+    if (cleaned !== value) setValue(cleaned.slice(0, NICKNAME_MAX_LEN));
   }
 
   function pickSuggestion(s: string): void {
@@ -110,13 +111,24 @@ export function Nickname(): JSX.Element {
 
     setLoading(true);
     try {
-      const res = await api<NicknameSuccess | NicknameFailure>('/account/nickname', {
-        method: 'POST',
-        body: JSON.stringify({ nickname: value }),
+      const { error } = await invokePickkong<{ ok: true }>('pickkong-account', {
+        action: 'set_nickname',
+        nickname: value,
       });
-      if (res.ok === false) {
-        toast(TOAST_BY_CODE[res.error_code] ?? COPY.toast_save_fail);
-        track('nick_save_fail', { error_code: res.error_code });
+      if (error) {
+        console.warn('[set_nickname] failed', error);
+        // 401 (토큰 만료/무효) — 토스 세션 끊김 안내 + 강제 재로그인
+        if (error.status === 401 || error.error_code === 'unauthenticated') {
+          await clearAuthTokens();
+          toast(COPY.login_disconnect);
+          track('nick_save_fail', { error_code: 'unauthenticated' });
+          nav('/login', { replace: true });
+          return;
+        }
+        const code: NicknameErrorCode =
+          error.error_code in TOAST_BY_CODE ? (error.error_code as NicknameErrorCode) : 'network';
+        toast(TOAST_BY_CODE[code]);
+        track('nick_save_fail', { error_code: code });
         return;
       }
       await useSession.getState().setNickname(value);
@@ -131,12 +143,9 @@ export function Nickname(): JSX.Element {
         nav('/', { replace: true });
       }
     } catch (err) {
-      const code: NicknameErrorCode =
-        err instanceof APIError && err.errorCode in TOAST_BY_CODE
-          ? (err.errorCode as NicknameErrorCode)
-          : 'network';
+      const code: NicknameErrorCode = 'network';
       toast(TOAST_BY_CODE[code]);
-      track('nick_save_fail', { error_code: code });
+      track('nick_save_fail', { error_code: code, message: err instanceof Error ? err.message : 'unknown' });
     } finally {
       setLoading(false);
     }
@@ -159,6 +168,7 @@ export function Nickname(): JSX.Element {
           <input
             value={value}
             onChange={onChange}
+            onBlur={onBlur}
             inputMode="text"
             maxLength={NICKNAME_MAX_LEN}
             placeholder="닉네임 입력"
