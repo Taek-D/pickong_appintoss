@@ -71,7 +71,7 @@ export function Done(): JSX.Element {
             track('done_press_home');
             nav('/', { replace: true });
           }}
-          className="h-14 w-full rounded-2xl bg-[var(--color-primary)] text-[16px] font-semibold text-white"
+          className="h-14 w-full rounded-2xl bg-[var(--color-primary)] text-[16px] font-semibold text-[var(--color-on-primary)]"
         >
           {COPY.done_cta_home}
         </button>

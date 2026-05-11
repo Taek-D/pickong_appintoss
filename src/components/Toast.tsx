@@ -44,7 +44,7 @@ export function ToastHost(): JSX.Element | null {
     <div
       role="status"
       aria-live="polite"
-      className={`fixed left-1/2 top-[64px] z-50 -translate-x-1/2 rounded-xl bg-[var(--color-text)] px-4 py-3 text-[14px] text-white shadow-lg transition ${
+      className={`fixed left-1/2 top-[64px] z-50 -translate-x-1/2 rounded-xl bg-[var(--color-text)] px-4 py-3 text-[14px] text-[var(--color-on-primary)] shadow-lg transition ${
         visible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'
       }`}
       style={{ maxWidth: 'min(92vw, 480px)' }}

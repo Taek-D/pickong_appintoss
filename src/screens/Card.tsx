@@ -5,7 +5,7 @@ import { BottomCTAStack } from '@/components/BottomCTA';
 import { CharacterIllustration } from '@/lib/character-illustration';
 import { useItems } from '@/state/items';
 import { useSession } from '@/state/session';
-import { api, APIError } from '@/lib/api';
+import { invokePickkong } from '@/services/supabaseClient';
 import { track } from '@/lib/analytics';
 import { toast } from '@/components/Toast';
 import { Share } from './Share';
@@ -44,19 +44,19 @@ export function Card(): JSX.Element {
     let cancelled = false;
     void (async () => {
       try {
-        const res = await api<CardUpsertResponse>(
-          `/cards/${encodeURIComponent(userKey)}/${ym}`,
-          {
-            method: 'POST',
-            body: JSON.stringify({
-              total_count: summary.total_count,
-              total_amount: summary.total_amount,
-              category_breakdown: summary.by_category,
-              nickname_snapshot: nickname,
-            }),
-          },
-        );
+        const { data: res, error } = await invokePickkong<CardUpsertResponse>('pickkong-cards', {
+          action: 'upsert',
+          user_key: userKey,
+          yyyymm: ym,
+          total_count: summary.total_count,
+          total_amount: summary.total_amount,
+          category_breakdown: summary.by_category,
+          nickname_snapshot: nickname,
+        });
         if (cancelled) return;
+        if (error || !res || !res.card_id) {
+          throw new Error(error?.message ?? 'card upsert failed');
+        }
         setCardId(res.card_id);
         setCharacter(res.character_type);
         setTopCat(res.top_category);
@@ -75,7 +75,7 @@ export function Card(): JSX.Element {
         });
       } catch (err) {
         if (cancelled) return;
-        const code = err instanceof APIError ? err.errorCode : 'unknown';
+        const code = err instanceof Error ? err.message : 'unknown';
         track('card_upsert_fail', { error_code: code });
         toast(COPY.card_save_fail);
       } finally {
@@ -150,7 +150,7 @@ export function Card(): JSX.Element {
             setShareOpen(true);
           }}
           disabled={loading || !cardId}
-          className="h-14 w-full rounded-2xl bg-[var(--color-primary)] text-[16px] font-semibold text-white disabled:opacity-50"
+          className="h-14 w-full rounded-2xl bg-[var(--color-primary)] text-[16px] font-semibold text-[var(--color-on-primary)] disabled:opacity-50"
         >
           {COPY.card_share_button}
         </button>

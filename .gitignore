@@ -8,6 +8,7 @@ build/
 *.local
 .granite/
 *.ait
+*.ait.bak*
 
 # env
 .env
@@ -16,6 +17,7 @@ build/
 
 # certs (mTLS — never commit)
 certs/
+mTLS_*/
 *.pem
 *.key
 *.crt

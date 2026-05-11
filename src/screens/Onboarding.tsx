@@ -70,19 +70,25 @@ export function Onboarding(): JSX.Element {
         </p>
       </div>
 
-      <div className="flex justify-center gap-2 pb-6">
+      <div className="flex justify-center gap-1 pb-6">
         {SLIDES.map((_, i) => (
+          // invisible touch wrapper로 44px 터치 영역 확보 (시각 dot은 그대로 작게)
           <button
             key={i}
             onClick={() => setStep(i)}
             aria-label={`슬라이드 ${i + 1}로 이동`}
-            className={cn(
-              'h-2 rounded-full transition-all',
-              i === step
-                ? 'w-8 bg-[var(--color-primary)]'
-                : 'w-2 bg-[var(--color-border)]',
-            )}
-          />
+            className="flex h-11 min-w-[20px] items-center justify-center px-1"
+          >
+            <span
+              className={cn(
+                'block h-2 rounded-full transition-all',
+                i === step
+                  ? 'w-8 bg-[var(--color-primary)]'
+                  : 'w-2 bg-[var(--color-border)]',
+              )}
+              aria-hidden
+            />
+          </button>
         ))}
       </div>
 

@@ -43,7 +43,7 @@ export function CharacterIllustration({ type, size = 180 }: Props): JSX.Element 
 export function DiagramMiniCut({ size = 120 }: { size?: number }): JSX.Element {
   return (
     <div
-      className="grid grid-cols-2 gap-1 rounded-2xl bg-white/70 p-3"
+      className="grid grid-cols-2 gap-1 rounded-2xl bg-[var(--color-card-chip)] p-3"
       style={{ width: size, height: size }}
       aria-hidden
     >

@@ -3,7 +3,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Top } from '@/components/Top';
 import { BottomSheet } from '@/components/BottomSheet';
-import { api, APIError } from '@/lib/api';
+import { invokePickkong } from '@/services/supabaseClient';
+import { clearAuthTokens } from '@/lib/authStorage';
 import { useSession } from '@/state/session';
 import { useItems } from '@/state/items';
 import { track } from '@/lib/analytics';
@@ -25,13 +26,21 @@ export function Settings(): JSX.Element {
     setDeleting(true);
     track('set_account_delete_confirm');
     try {
-      await api('/account', { method: 'DELETE' });
+      const { error } = await invokePickkong<{ ok: true }>('pickkong-account', {
+        action: 'delete_account',
+      });
+      if (error) {
+        track('set_account_delete_fail', { error_code: error.error_code });
+        toast(COPY.set_account_delete_fail);
+        return;
+      }
       await useItems.getState().clear();
+      await clearAuthTokens();
       await clear();
       track('set_account_delete_success');
       nav('/onb', { replace: true });
     } catch (err) {
-      const code = err instanceof APIError ? err.errorCode : 'unknown';
+      const code = err instanceof Error ? err.message : 'unknown';
       track('set_account_delete_fail', { error_code: code });
       toast(COPY.set_account_delete_fail);
     } finally {
@@ -86,7 +95,7 @@ export function Settings(): JSX.Element {
           <button
             onClick={onDelete}
             disabled={deleting}
-            className="h-12 w-full rounded-2xl bg-[var(--color-error)] text-[16px] font-semibold text-white disabled:opacity-50"
+            className="h-12 w-full rounded-2xl bg-[var(--color-error)] text-[16px] font-semibold text-[var(--color-on-error)] disabled:opacity-50"
           >
             {deleting ? '처리 중...' : '데이터 삭제'}
           </button>

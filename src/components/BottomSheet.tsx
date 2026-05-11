@@ -22,7 +22,7 @@ export function BottomSheet({ open, onClose, title, children }: Props): JSX.Elem
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center" role="dialog" aria-modal="true">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="absolute inset-0 bg-[var(--color-scrim)]" onClick={onClose} />
       <div
         className="relative z-10 w-full max-w-md rounded-t-3xl bg-[var(--color-surface)] pb-[max(env(safe-area-inset-bottom),16px)] shadow-2xl"
         style={{ animation: 'slideUp 0.2s ease-out' }}

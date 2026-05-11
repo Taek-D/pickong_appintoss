@@ -180,14 +180,15 @@ function Step2({
           <button
             key={q}
             onClick={() => onChange(value + q)}
-            className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-[12px] tabular-nums"
+            // 토스 가이드: 터치 타겟 최소 44px (h-11)
+            className="h-11 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-4 text-[13px] tabular-nums active:scale-95 transition"
           >
             +{q.toLocaleString()}
           </button>
         ))}
         <button
           onClick={() => onChange(0)}
-          className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-[12px] text-[var(--color-text-muted)]"
+          className="h-11 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-4 text-[13px] text-[var(--color-text-muted)] active:scale-95 transition"
         >
           지우기
         </button>

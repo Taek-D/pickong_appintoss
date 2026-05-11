@@ -96,7 +96,7 @@ export function List(): JSX.Element {
         <div className="mt-4 flex flex-col gap-2 pb-4">
           <button
             onClick={onDelete}
-            className="h-12 w-full rounded-2xl bg-[var(--color-error)] text-[16px] font-semibold text-white"
+            className="h-12 w-full rounded-2xl bg-[var(--color-error)] text-[16px] font-semibold text-[var(--color-on-error)]"
           >
             {COPY.list_delete}
           </button>

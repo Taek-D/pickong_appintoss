@@ -104,7 +104,7 @@ export function Share(props: Props): JSX.Element {
         <button
           onClick={onShare}
           disabled={busy}
-          className="flex items-center justify-between rounded-2xl bg-[var(--color-primary)] px-4 py-4 text-left text-white transition active:scale-[0.98] disabled:opacity-50"
+          className="flex items-center justify-between rounded-2xl bg-[var(--color-primary)] px-4 py-4 text-left text-[var(--color-on-primary)] transition active:scale-[0.98] disabled:opacity-50"
         >
           <span className="text-[16px] font-semibold">{COPY.card_share_via_toss}</span>
           <span className="text-[20px]" aria-hidden>📨</span>

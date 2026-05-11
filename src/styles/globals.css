@@ -7,12 +7,21 @@
   --color-surface: #FFFFFF;          /* 30% 화이트 */
   --color-primary: #7BD389;          /* 10% 연두 — 토스 미니앱 brand primary */
   --color-primary-soft: #D6F0DA;
+  --color-on-primary: #FFFFFF;       /* primary 위 텍스트 (대비 4.5:1+ 만족) */
   --color-accent: #B59CD9;           /* 보조 — 라벤더 */
   --color-text: #3F2D24;             /* 진한 브라운 */
   --color-text-muted: #8C7B6F;
   --color-border: #E5DCD0;
   --color-error: #E26A6A;
+  --color-on-error: #FFFFFF;         /* error 위 텍스트 */
   --color-success: #7BD389;
+
+  /* Semantic surface tokens */
+  --color-card-chip: rgba(255, 255, 255, 0.7);  /* 카테고리 컬러 위 카운트 칩 */
+  --color-scrim: rgba(0, 0, 0, 0.4);            /* 모달/바텀시트 오버레이 */
+
+  /* Focus ring (a11y — 키보드/BLE 입력 가시화) */
+  --color-focus-ring: #7BD389;
 
   /* Typography */
   --font-family-base: "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", system-ui, sans-serif;
@@ -70,6 +79,18 @@ button {
 button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+/* 키보드/BLE 포커스 가시화 — 마우스 클릭 시에는 안 뜸 (focus-visible 사용) */
+button:focus-visible,
+[role="button"]:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+  border-radius: 6px;
 }
 
 /* Safe Area (PRD §10.12) */
