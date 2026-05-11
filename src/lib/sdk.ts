@@ -16,17 +16,27 @@ async function tryImportSdk(): Promise<typeof import('@apps-in-toss/web-framewor
 }
 
 // ─── appLogin ─────────────────────────────────────────────
-export async function appLogin(): Promise<{ code: string } | { mock: true; user_key: string }> {
+// 공식 시그니처: appLogin(): Promise<{ authorizationCode: string; referrer: 'DEFAULT' | 'SANDBOX' }>
+// (참고: https://developers-apps-in-toss.toss.im/bedrock/reference/framework/로그인/appLogin.md)
+export type AppLoginResult =
+  | { authorizationCode: string; referrer: 'DEFAULT' | 'SANDBOX' | 'sandbox' }
+  | { mock: true; authorizationCode: string; referrer: 'DEFAULT' };
+
+export async function appLogin(): Promise<AppLoginResult> {
   const sdk = await tryImportSdk();
   if (sdk?.appLogin && typeof sdk.appLogin === 'function') {
-    const isSupported = (sdk.appLogin as { isSupported?: () => boolean }).isSupported;
-    if (typeof isSupported === 'function' && isSupported() === true) {
-      const result = await (sdk.appLogin as unknown as () => Promise<{ code: string }>)();
-      return result;
-    }
+    const result = await (sdk.appLogin as unknown as () => Promise<{
+      authorizationCode: string;
+      referrer: 'DEFAULT' | 'SANDBOX' | 'sandbox';
+    }>)();
+    return result;
   }
   // mock fallback (web dev)
-  return { mock: true, user_key: 'mock-' + crypto.randomUUID() };
+  return {
+    mock: true,
+    authorizationCode: 'mock-code-' + crypto.randomUUID(),
+    referrer: 'DEFAULT',
+  };
 }
 
 // ─── Storage ──────────────────────────────────────────────

@@ -1,6 +1,16 @@
 // 백엔드 API 클라이언트 — fetch wrapper, 401 자동 핸들링
 const API_BASE = (import.meta.env.VITE_API_BASE as string | undefined) ?? '/api';
 
+// 토스 미니앱 런타임에서 상대 경로 API_BASE 는 백엔드로 라우팅되지 않음.
+// 운영 빌드에서 절대 URL이 안 들어왔으면 즉시 경고를 띄워 디버깅을 돕는다.
+if (typeof window !== 'undefined' && !/^https?:\/\//i.test(API_BASE)) {
+  // eslint-disable-next-line no-console
+  console.warn(
+    '[api] VITE_API_BASE="%s" 은(는) 상대 경로입니다. 토스 미니앱 빌드에서는 백엔드 절대 URL(https://...)로 설정해야 /auth/exchange 호출이 성공합니다.',
+    API_BASE,
+  );
+}
+
 export class APIError extends Error {
   constructor(
     public status: number,

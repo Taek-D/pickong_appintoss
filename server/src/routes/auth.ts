@@ -9,10 +9,14 @@ import { requireAuth, getSession } from '../middleware/auth';
 
 export const authRoutes = new Hono();
 
-const ExchangeSchema = z.object({ code: z.string().min(1) });
+// appLogin SDK 가 반환하는 referrer 값. 'sandbox' 는 일부 환경에서 소문자로 내려옴.
+const ExchangeSchema = z.object({
+  authorizationCode: z.string().min(1),
+  referrer: z.enum(['DEFAULT', 'SANDBOX', 'sandbox']),
+});
 
 authRoutes.post('/exchange', async (c) => {
-  let body: { code: string };
+  let body: { authorizationCode: string; referrer: 'DEFAULT' | 'SANDBOX' | 'sandbox' };
   try {
     const json = await c.req.json();
     body = ExchangeSchema.parse(json);
@@ -23,7 +27,7 @@ authRoutes.post('/exchange', async (c) => {
   // 1. 토스 OAuth2 token 교환
   let token;
   try {
-    token = await generateOauth2Token(body.code);
+    token = await generateOauth2Token(body.authorizationCode, body.referrer);
   } catch (err) {
     console.error('[auth/exchange] generateOauth2Token failed', err);
     return c.json({ error_code: 'toss_unavailable' }, 502);
@@ -32,7 +36,7 @@ authRoutes.post('/exchange', async (c) => {
   // 2. user_key 조회
   let userInfo;
   try {
-    userInfo = await loginMe(token.access_token);
+    userInfo = await loginMe(token.accessToken);
   } catch (err) {
     console.error('[auth/exchange] loginMe failed', err);
     return c.json({ error_code: 'toss_unavailable' }, 502);

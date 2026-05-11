@@ -1,13 +1,38 @@
-// 토스 로그인 훅 — appLogin → /auth/exchange → 세션 hydrate
+// 토스 로그인 — Phase 1: Supabase Edge Function (pickkong-auth-login) 호출
+// 흐름: appLogin → {authorizationCode, referrer} → supabase.functions.invoke → 토큰 영속 → 라우팅
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { appLogin } from './sdk';
-import { api, APIError } from './api';
 import { useSession } from '@/state/session';
 import { track } from './analytics';
 import { toast } from '@/components/Toast';
 import { COPY } from '@shared/constants';
-import type { AuthExchangeResponse, AuthMeResponse } from '@shared/types';
+import { supabase } from '@/services/supabaseClient';
+import {
+  setAuthTokens,
+  getAuthTokens,
+  clearAuthTokens,
+} from './authStorage';
+
+interface PickkongAuthLoginSuccess {
+  sessionToken: string;
+  tossRefreshToken: string;
+  userKey: string;
+  isFirstLogin: boolean;
+  nickname: string | null;
+  expiresIn: number;
+}
+
+interface PickkongAuthLoginFailure {
+  error: string;
+  message?: string;
+}
+
+type PickkongAuthLoginResponse = PickkongAuthLoginSuccess | PickkongAuthLoginFailure;
+
+function isFailure(r: PickkongAuthLoginResponse): r is PickkongAuthLoginFailure {
+  return 'error' in r;
+}
 
 export function useTossLogin(): {
   start: () => Promise<void>;
@@ -17,47 +42,77 @@ export function useTossLogin(): {
   const nav = useNavigate();
   const [params] = useSearchParams();
 
+  function routeAfterLogin(nickname: string | null): void {
+    const from = params.get('from');
+    const next = params.get('next');
+    if (!nickname) {
+      nav('/nick' + (from === 'share' && next ? `?from=share&next=${encodeURIComponent(next)}` : ''));
+    } else if (from === 'share' && next) {
+      nav(decodeURIComponent(next));
+    } else {
+      nav('/');
+    }
+  }
+
   async function start(): Promise<void> {
     if (loading) return;
     setLoading(true);
     track('login_press_start', { entry_source: params.get('from') ?? 'direct' });
     try {
       const result = await appLogin();
-      let exchangePayload: { code: string };
+
+      // dev mock — supabase function 호출 우회 (mock authorizationCode 는 토스가 거절함)
       if ('mock' in result && result.mock) {
-        // 개발 mock: 백엔드도 mock mode일 때 임의 code 전달
-        exchangePayload = { code: 'mock-code-' + Date.now() };
-      } else if ('code' in result) {
-        exchangePayload = { code: result.code };
-      } else {
-        throw new Error('appLogin returned unexpected payload');
+        const userKey = 'mock-' + result.authorizationCode.slice(-12);
+        await setAuthTokens({
+          userKey,
+          nickname: null,
+          sessionToken: 'mock',
+          tossRefreshToken: 'mock',
+          expiresAt: Date.now() + 3600 * 1000,
+        });
+        await useSession.getState().setSession(userKey, null);
+        track('login_success', { is_first_login: true, entry_source: params.get('from') ?? 'direct' });
+        routeAfterLogin(null);
+        return;
       }
 
-      const res = await api<AuthExchangeResponse>('/auth/exchange', {
-        method: 'POST',
-        body: JSON.stringify(exchangePayload),
-      });
+      const { data, error } = await supabase.functions.invoke<PickkongAuthLoginResponse>(
+        'pickkong-auth-login',
+        {
+          body: {
+            authorizationCode: result.authorizationCode,
+            referrer: result.referrer,
+          },
+        },
+      );
 
-      await useSession.getState().setSession(res.user_key, res.nickname);
+      if (error || !data || isFailure(data)) {
+        const code = data && isFailure(data) ? data.error : (error?.message ?? 'unknown');
+        track('login_fail', { error_code: code });
+        if (code === 'toss_unavailable') toast(COPY.login_toss_unavailable);
+        else if (error) toast(COPY.login_network_fail);
+        else toast(COPY.toast_save_fail);
+        return;
+      }
+
+      await setAuthTokens({
+        userKey: data.userKey,
+        nickname: data.nickname,
+        sessionToken: data.sessionToken,
+        tossRefreshToken: data.tossRefreshToken,
+        expiresAt: Date.now() + data.expiresIn * 1000,
+      });
+      await useSession.getState().setSession(data.userKey, data.nickname);
       track('login_success', {
-        is_first_login: res.is_first_login,
+        is_first_login: data.isFirstLogin,
         entry_source: params.get('from') ?? 'direct',
       });
-
-      // 라우팅 분기 (PRD §6.2)
-      const from = params.get('from');
-      const next = params.get('next');
-      if (!res.nickname) {
-        nav('/nick' + (from === 'share' && next ? `?from=share&next=${encodeURIComponent(next)}` : ''));
-      } else if (from === 'share' && next) {
-        nav(decodeURIComponent(next));
-      } else {
-        nav('/');
-      }
+      routeAfterLogin(data.nickname);
     } catch (err) {
-      const code = err instanceof APIError ? err.errorCode : 'unknown';
-      track('login_fail', { error_code: code });
-      toast(COPY.toast_save_fail);
+      console.error('[useTossLogin] error', err);
+      track('login_fail', { error_code: 'unknown' });
+      toast(COPY.login_network_fail);
     } finally {
       setLoading(false);
     }
@@ -66,7 +121,8 @@ export function useTossLogin(): {
   return { start, loading };
 }
 
-// 라우트 진입 시 cookie 세션 검증 + 401이면 자동 /login (바텀시트 금지, 토스트만)
+// Phase 1: Storage 토큰 기반 세션 검증 (cookie 기반 /auth/me 폐기)
+// Phase 2 에서 supabase JWT 검증/refresh 흐름 추가 예정.
 export function useEnsureLoggedIn(): { checked: boolean } {
   const [checked, setChecked] = useState(false);
   const nav = useNavigate();
@@ -75,19 +131,20 @@ export function useEnsureLoggedIn(): { checked: boolean } {
     let cancelled = false;
     void (async () => {
       try {
-        const me = await api<AuthMeResponse>('/auth/me');
+        const tokens = await getAuthTokens();
         if (cancelled) return;
-        await useSession.getState().setSession(me.user_key, me.nickname);
-        setChecked(true);
-      } catch (err) {
-        if (cancelled) return;
-        if (err instanceof APIError && err.status === 401) {
+        if (!tokens || tokens.expiresAt < Date.now()) {
+          if (tokens) await clearAuthTokens();
           track('login_disconnect_detected', { screen: globalThis.location.pathname });
           toast(COPY.login_disconnect);
           nav('/login', { replace: true });
-        } else {
-          setChecked(true);
+          return;
         }
+        await useSession.getState().setSession(tokens.userKey, tokens.nickname);
+        setChecked(true);
+      } catch {
+        if (cancelled) return;
+        setChecked(true);
       }
     })();
     return () => {

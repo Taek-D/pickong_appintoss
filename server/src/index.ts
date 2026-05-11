@@ -6,6 +6,7 @@ import { serve } from '@hono/node-server';
 import { authRoutes } from './routes/auth';
 import { accountRoutes } from './routes/account';
 import { cardsRoutes } from './routes/cards';
+import { tossCallbackRoutes } from './routes/toss-callback';
 import { sessionMiddleware } from './middleware/auth';
 import { initSentry, captureException } from './lib/sentry';
 
@@ -32,6 +33,7 @@ app.get('/health', (c) => c.json({ ok: true, version: '0.1.0' }));
 app.route('/auth', authRoutes);
 app.route('/account', accountRoutes);
 app.route('/cards', cardsRoutes);
+app.route('/toss', tossCallbackRoutes);
 
 // 에러 핸들러
 app.onError((err, c) => {

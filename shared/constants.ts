@@ -52,6 +52,8 @@ export const COPY = {
   login_sub: '토스로 로그인하면 기록이 안전하게 이어져요',
   login_cta: '토스로 시작하기',
   login_disconnect: '토스 로그인을 다시 연결해 볼까요?',
+  login_toss_unavailable: '토스 로그인이 잠시 불안정해요. 잠시 후 다시 시도해 볼까요?',
+  login_network_fail: '인터넷 연결을 확인하고 다시 시도해 볼까요?',
   nick_headline_first: '어떻게 부를까요?',
   nick_sub_first: '친구에게 카드를 공유할 때 이렇게 보여요',
   nick_cta_first: '이 이름으로 시작할게요',

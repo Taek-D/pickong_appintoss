@@ -1,11 +1,11 @@
-// 토스 OAuth2 mTLS 클라이언트
-// mTLS 인증서가 설정되지 않으면 mock mode (개발 환경)
+// 앱인토스 토스 로그인 mTLS 클라이언트
+// 공식 명세: https://developers-apps-in-toss.toss.im/login/develop.md
+// 인증 방식: mTLS 클라이언트 인증서만. client_id/secret 사용하지 않음.
+// mTLS 인증서가 설정되지 않으면 mock mode (개발 환경 only)
 import { Agent, fetch as undiciFetch } from 'undici';
 import { readFileSync } from 'node:fs';
 
-const TOSS_API_BASE = process.env.TOSS_API_BASE ?? 'https://oauth2.cert.toss.im';
-const CLIENT_ID = process.env.TOSS_CLIENT_ID ?? '';
-const CLIENT_SECRET = process.env.TOSS_CLIENT_SECRET ?? '';
+const TOSS_API_BASE = process.env.TOSS_API_BASE ?? 'https://apps-in-toss-api.toss.im';
 const CERT_PATH = process.env.TOSS_MTLS_CERT_PATH ?? '';
 const KEY_PATH = process.env.TOSS_MTLS_KEY_PATH ?? '';
 
@@ -14,10 +14,10 @@ let mockMode = false;
 
 function getAgent(): Agent | null {
   if (mtlsAgent) return mtlsAgent;
-  if (!CERT_PATH || !KEY_PATH || !CLIENT_ID || !CLIENT_SECRET) {
+  if (!CERT_PATH || !KEY_PATH) {
     if (!mockMode) {
       console.warn(
-        '[toss-client] mTLS not configured (TOSS_MTLS_CERT_PATH / TOSS_MTLS_KEY_PATH / TOSS_CLIENT_ID / TOSS_CLIENT_SECRET). Using mock mode.',
+        '[toss-client] mTLS not configured (TOSS_MTLS_CERT_PATH / TOSS_MTLS_KEY_PATH). Using mock mode — 운영 빌드에서는 반드시 mTLS 인증서를 설정해야 합니다.',
       );
       mockMode = true;
     }
@@ -42,69 +42,97 @@ export function isMockMode(): boolean {
   return mockMode;
 }
 
-interface TokenResponse {
-  access_token: string;
-  refresh_token: string;
-  expires_in: number;
-  token_type: string;
+// 공식 응답 wrapper
+interface TossResultEnvelope<T> {
+  resultType: 'SUCCESS' | 'FAIL';
+  success?: T;
+  error?: { errorCode: string; reason?: string } | string;
 }
 
-export async function generateOauth2Token(code: string): Promise<TokenResponse> {
+export interface TossTokenSuccess {
+  tokenType: string;
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number;
+  scope: string;
+}
+
+interface TossLoginMeSuccess {
+  userKey: number;
+  scope: string;
+  agreedTerms: string[];
+}
+
+function unwrap<T>(payload: TossResultEnvelope<T>, opName: string): T {
+  if (payload.resultType === 'SUCCESS' && payload.success) {
+    return payload.success;
+  }
+  const err = payload.error;
+  const errorCode =
+    typeof err === 'string'
+      ? err
+      : err && typeof err === 'object'
+      ? err.errorCode
+      : 'unknown';
+  throw new Error(`toss ${opName} failed: ${errorCode}`);
+}
+
+export async function generateOauth2Token(
+  authorizationCode: string,
+  referrer: string,
+): Promise<TossTokenSuccess> {
   if (isMockMode()) {
     return {
-      access_token: 'mock_access_' + Date.now(),
-      refresh_token: 'mock_refresh_' + Date.now(),
-      expires_in: 3600,
-      token_type: 'Bearer',
+      tokenType: 'Bearer',
+      accessToken: 'mock_access_' + Date.now(),
+      refreshToken: 'mock_refresh_' + Date.now(),
+      expiresIn: 3600,
+      scope: 'mock',
     };
   }
   const agent = getAgent();
   if (!agent) throw new Error('toss-client: no agent');
-  const res = await undiciFetch(`${TOSS_API_BASE}/oauth2/token`, {
-    method: 'POST',
-    dispatcher: agent,
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Accept: 'application/json',
+  const res = await undiciFetch(
+    `${TOSS_API_BASE}/api-partner/v1/apps-in-toss/user/oauth2/generate-token`,
+    {
+      method: 'POST',
+      dispatcher: agent,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ authorizationCode, referrer }),
     },
-    body: new URLSearchParams({
-      grant_type: 'authorization_code',
-      code,
-      client_id: CLIENT_ID,
-      client_secret: CLIENT_SECRET,
-    }),
-  });
+  );
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(`toss generateOauth2Token failed: ${res.status} ${text}`);
+    throw new Error(`toss generateOauth2Token http ${res.status}: ${text}`);
   }
-  return (await res.json()) as TokenResponse;
+  const json = (await res.json()) as TossResultEnvelope<TossTokenSuccess>;
+  return unwrap(json, 'generateOauth2Token');
 }
 
-export async function refreshOauth2Token(refreshToken: string): Promise<TokenResponse> {
+export async function refreshOauth2Token(refreshToken: string): Promise<TossTokenSuccess> {
   if (isMockMode()) {
     return {
-      access_token: 'mock_access_' + Date.now(),
-      refresh_token: refreshToken,
-      expires_in: 3600,
-      token_type: 'Bearer',
+      tokenType: 'Bearer',
+      accessToken: 'mock_access_' + Date.now(),
+      refreshToken,
+      expiresIn: 3600,
+      scope: 'mock',
     };
   }
   const agent = getAgent();
   if (!agent) throw new Error('toss-client: no agent');
-  const res = await undiciFetch(`${TOSS_API_BASE}/oauth2/token`, {
-    method: 'POST',
-    dispatcher: agent,
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      grant_type: 'refresh_token',
-      refresh_token: refreshToken,
-      client_id: CLIENT_ID,
-      client_secret: CLIENT_SECRET,
-    }),
-  });
-  if (!res.ok) throw new Error(`toss refreshOauth2Token failed: ${res.status}`);
-  return (await res.json()) as TokenResponse;
+  const res = await undiciFetch(
+    `${TOSS_API_BASE}/api-partner/v1/apps-in-toss/user/oauth2/refresh-token`,
+    {
+      method: 'POST',
+      dispatcher: agent,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken }),
+    },
+  );
+  if (!res.ok) throw new Error(`toss refreshOauth2Token http ${res.status}`);
+  const json = (await res.json()) as TossResultEnvelope<TossTokenSuccess>;
+  return unwrap(json, 'refreshOauth2Token');
 }
 
 export async function loginMe(accessToken: string): Promise<{ user_key: string }> {
@@ -113,13 +141,18 @@ export async function loginMe(accessToken: string): Promise<{ user_key: string }
   }
   const agent = getAgent();
   if (!agent) throw new Error('toss-client: no agent');
-  const res = await undiciFetch(`${TOSS_API_BASE}/oauth2/login/me`, {
-    method: 'GET',
-    dispatcher: agent,
-    headers: { Authorization: `Bearer ${accessToken}` },
-  });
-  if (!res.ok) throw new Error(`toss loginMe failed: ${res.status}`);
-  return (await res.json()) as { user_key: string };
+  const res = await undiciFetch(
+    `${TOSS_API_BASE}/api-partner/v1/apps-in-toss/user/oauth2/login-me`,
+    {
+      method: 'GET',
+      dispatcher: agent,
+      headers: { Authorization: `Bearer ${accessToken}` },
+    },
+  );
+  if (!res.ok) throw new Error(`toss loginMe http ${res.status}`);
+  const json = (await res.json()) as TossResultEnvelope<TossLoginMeSuccess>;
+  const success = unwrap(json, 'loginMe');
+  return { user_key: String(success.userKey) };
 }
 
 export async function removeByUserKey(userKey: string): Promise<void> {
@@ -129,15 +162,18 @@ export async function removeByUserKey(userKey: string): Promise<void> {
   }
   const agent = getAgent();
   if (!agent) throw new Error('toss-client: no agent');
-  const res = await undiciFetch(`${TOSS_API_BASE}/oauth2/account/remove`, {
-    method: 'POST',
-    dispatcher: agent,
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Client-Id': CLIENT_ID,
-      'X-Client-Secret': CLIENT_SECRET,
+  const numericUserKey = Number(userKey);
+  if (!Number.isFinite(numericUserKey)) {
+    throw new Error(`toss removeByUserKey: userKey is not numeric: ${userKey}`);
+  }
+  const res = await undiciFetch(
+    `${TOSS_API_BASE}/api-partner/v1/apps-in-toss/user/oauth2/access/remove-by-user-key`,
+    {
+      method: 'POST',
+      dispatcher: agent,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userKey: numericUserKey }),
     },
-    body: JSON.stringify({ user_key: userKey }),
-  });
-  if (!res.ok) throw new Error(`toss removeByUserKey failed: ${res.status}`);
+  );
+  if (!res.ok) throw new Error(`toss removeByUserKey http ${res.status}`);
 }

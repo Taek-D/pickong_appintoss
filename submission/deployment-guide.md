@@ -7,7 +7,8 @@
 ### 1. 토스 콘솔 인증서 발급
 - 콘솔 → 사업자 인증 → mTLS 인증서 다운로드 (`client-cert.pem` + `client-key.pem`)
 - 로컬 `certs/` 폴더에 배치 (gitignore 됨)
-- `.env` 작성: `TOSS_MTLS_CERT_PATH=./certs/client-cert.pem`, `TOSS_MTLS_KEY_PATH=./certs/client-key.pem`, `TOSS_CLIENT_ID`, `TOSS_CLIENT_SECRET`
+- `.env` 작성: `TOSS_MTLS_CERT_PATH=./certs/client-cert.pem`, `TOSS_MTLS_KEY_PATH=./certs/client-key.pem`
+- 앱인토스 토스 로그인 API는 mTLS 인증서가 클라이언트 인증 수단이므로 `client_id`/`client_secret` 은 필요 없음.
 
 ### 2. Supabase 운영 DB
 - supabase.com → New Project → 픽콩-prod
@@ -21,6 +22,21 @@
 
 ### 4. GitHub Actions secrets
 - `DATABASE_URL` (만료 cron이 사용)
+
+### 5. 토스 연결 끊기 / 회원 탈퇴 콜백
+- 라우트: `POST /toss/unlink` ([server/src/routes/toss-callback.ts](../server/src/routes/toss-callback.ts))
+- referrer: `UNLINK` / `WITHDRAWAL_TERMS` / `WITHDRAWAL_TOSS` 모두 동일 처리
+  (`monthly_cards` DELETE + `accounts.status='withdrawn'` + `nickname=NULL`)
+- Basic Auth 자격 생성:
+  ```bash
+  echo "TOSS_UNLINK_AUTH_USER=$(openssl rand -hex 8)"
+  echo "TOSS_UNLINK_AUTH_PASS=$(openssl rand -hex 16)"
+  ```
+- `.env`에 위 두 값 등록 후, 앱인토스 콘솔 → 연동 → "연결 끊기 콜백 URL"에 동일 자격으로 등록:
+  - URL: `https://<운영-도메인>/toss/unlink`
+  - 메서드: `POST`
+  - Basic Auth 사용자명/비밀번호: 위에서 생성한 값
+- 콘솔 "테스트하기" 버튼으로 200 OK 응답 확인 → 미응답 시 401(인증) / 400(payload) / 500(DB) 분류해 디버그
 
 ## 빌드
 
