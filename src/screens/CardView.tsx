@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Top } from '@/components/Top';
 import { BottomCTA } from '@/components/BottomCTA';
 import { CharacterIllustration } from '@/lib/character-illustration';
-import { api, APIError } from '@/lib/api';
+import { invokePickkong } from '@/services/supabaseClient';
 import { track } from '@/lib/analytics';
 import { COPY, CATEGORIES, CHARACTER_LABELS } from '@shared/constants';
 import type { MonthlyCard } from '@shared/types';
@@ -35,31 +35,30 @@ export function CardView(): JSX.Element {
     }
     let cancelled = false;
     void (async () => {
-      try {
-        const r = await api<Resp>(`/cards/${encodeURIComponent(hash)}`);
-        if (cancelled) return;
-        if (r.status === 'owner_active' && r.card) {
-          setState({ kind: 'owner_active', card: r.card });
-          track('cardview_view', { card_id: hash, is_owner: true, card_month: r.card.month });
-        } else if (r.status === 'other_active' && r.card) {
-          setState({ kind: 'other_active', card: r.card });
-          track('cardview_view', { card_id: hash, is_owner: false, card_month: r.card.month });
-        } else if (r.status === 'expired') {
-          setState({ kind: 'expired', reason: r.reason ?? 'expired' });
-          track('cardview_expired_view', { card_id: hash, reason: r.reason ?? 'expired' });
-        } else {
-          setState({ kind: 'not_found' });
-          track('cardview_load_fail', { error_code: 'not_found' });
-        }
-      } catch (err) {
-        if (cancelled) return;
-        const code = err instanceof APIError ? err.errorCode : 'unknown';
-        if (code === 'not_found') {
-          setState({ kind: 'not_found' });
-        } else {
-          setState({ kind: 'expired', reason: 'expired' });
-        }
+      const { data: r, error } = await invokePickkong<Resp>('pickkong-cards', {
+        action: 'get',
+        card_id: hash,
+      });
+      if (cancelled) return;
+      if (error || !r) {
+        const code = error?.error_code ?? 'unknown';
+        if (code === 'not_found') setState({ kind: 'not_found' });
+        else setState({ kind: 'expired', reason: 'expired' });
         track('cardview_load_fail', { error_code: code });
+        return;
+      }
+      if (r.status === 'owner_active' && r.card) {
+        setState({ kind: 'owner_active', card: r.card });
+        track('cardview_view', { card_id: hash, is_owner: true, card_month: r.card.month });
+      } else if (r.status === 'other_active' && r.card) {
+        setState({ kind: 'other_active', card: r.card });
+        track('cardview_view', { card_id: hash, is_owner: false, card_month: r.card.month });
+      } else if (r.status === 'expired') {
+        setState({ kind: 'expired', reason: r.reason ?? 'expired' });
+        track('cardview_expired_view', { card_id: hash, reason: r.reason ?? 'expired' });
+      } else {
+        setState({ kind: 'not_found' });
+        track('cardview_load_fail', { error_code: 'not_found' });
       }
     })();
     return () => {
