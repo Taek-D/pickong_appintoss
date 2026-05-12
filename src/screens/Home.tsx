@@ -62,7 +62,7 @@ export function Home(): JSX.Element {
   }
 
   return (
-    <div className="safe-area flex h-full flex-col pb-32">
+    <div className="safe-area flex h-full flex-col pb-40">
       <Top
         title=""
         left={
@@ -117,8 +117,11 @@ export function Home(): JSX.Element {
                 )}
                 style={filled ? { background: cat.color } : undefined}
               >
-                <span className="text-[40px]" aria-hidden>
-                  {filled ? cat.emoji : '·'}
+                <span
+                  className={cn('text-[40px]', !filled && 'opacity-25 grayscale')}
+                  aria-hidden
+                >
+                  {cat.emoji}
                 </span>
                 <span className="text-[14px] font-semibold text-[var(--color-text)]">
                   {cat.label}
