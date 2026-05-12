@@ -54,3 +54,7 @@ coverage/
 
 # typescript
 *.tsbuildinfo
+
+# UI 검증 산출물 (Playwright MCP / 스크린샷)
+.playwright-mcp/
+*-after-fix*.png
