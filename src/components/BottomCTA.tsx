@@ -43,10 +43,10 @@ export function BottomCTA({
         className={cn(
           'h-14 w-full rounded-2xl text-[16px] font-semibold transition active:scale-[0.98]',
           variant === 'primary' &&
-            'bg-[var(--color-primary)] text-[var(--color-on-primary)] hover:opacity-95',
+            'bg-[var(--color-primary)] text-[var(--color-on-primary)] shadow-[0_4px_12px_rgba(123,211,137,0.3)] hover:opacity-95',
           variant === 'secondary' &&
             'bg-[var(--color-surface)] text-[var(--color-primary)] border-2 border-[var(--color-primary)]',
-          (disabled || loading) && 'opacity-50',
+          (disabled || loading) && 'opacity-50 shadow-none',
           className,
         )}
         {...rest}
