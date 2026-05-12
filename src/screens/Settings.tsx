@@ -78,14 +78,19 @@ export function Settings(): JSX.Element {
           nav('/set/nickname');
         })}
         {row('내 기록 보기', () => nav('/list'))}
-        {row(COPY.set_account_delete, () => {
-          track('set_press_account_delete');
-          setConfirmOpen(true);
-        }, true)}
+        <div className="mt-6 border-t-8 border-[var(--color-background)]">
+          {row(COPY.set_account_delete, () => {
+            track('set_press_account_delete');
+            setConfirmOpen(true);
+          }, true)}
+        </div>
       </div>
 
       <div className="px-6 pb-8 text-[12px] text-[var(--color-text-muted)]">
-        <p>{COPY.set_version}: 0.1.0 (Phase 2 dev)</p>
+        <p>
+          {COPY.set_version}: 0.1.0
+          {import.meta.env.MODE !== 'production' && ` (${import.meta.env.MODE})`}
+        </p>
         <p className="mt-1">{COPY.set_about}: 픽콩 팀</p>
       </div>
 
