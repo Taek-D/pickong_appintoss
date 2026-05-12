@@ -65,9 +65,6 @@ export function Home(): JSX.Element {
     <div className="safe-area flex h-full flex-col pb-40">
       <Top
         title=""
-        left={
-          <span className="text-[18px] font-bold text-[var(--color-text)]">픽콩</span>
-        }
         right={
           <button
             onClick={() => nav('/set')}
@@ -109,11 +106,16 @@ export function Home(): JSX.Element {
               <button
                 key={cat.id}
                 onClick={() => onCategory(cat.id)}
+                aria-label={
+                  filled
+                    ? `${cat.label} 카테고리, ${count}콩 모음`
+                    : `${cat.label} 카테고리, 아직 비어 있음`
+                }
                 className={cn(
                   'flex aspect-square flex-col items-center justify-center gap-2 rounded-2xl border-2 p-3 text-center transition active:scale-[0.97]',
                   filled
                     ? 'border-transparent shadow-sm'
-                    : 'border-dashed border-[var(--color-border)] bg-[var(--color-surface)]',
+                    : 'border-dashed border-[var(--color-text-muted)]/40 bg-[var(--color-surface)]',
                 )}
                 style={filled ? { background: cat.color } : undefined}
               >
