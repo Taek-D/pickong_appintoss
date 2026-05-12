@@ -111,16 +111,25 @@ export function Home(): JSX.Element {
           />
         </div>
 
-        {/* 주간 진행 */}
-        <p className="mt-3 text-[13px] text-[var(--color-text-muted)]">
-          {COPY.weekly_progress(weekLeft)}
-        </p>
+        {/* 주간 진행 — 목표 달성 시 pill 강조, 미달 시 muted */}
+        {weekLeft <= 0 ? (
+          <div className="mt-3">
+            <span className="inline-flex items-center gap-1 rounded-full bg-[var(--color-primary-soft)] px-2.5 py-1 text-[12px] font-semibold text-[var(--color-text)]">
+              <span aria-hidden>✓</span>
+              {COPY.weekly_progress(weekLeft)}
+            </span>
+          </div>
+        ) : (
+          <p className="mt-3 text-[13px] text-[var(--color-text-muted)]">
+            {COPY.weekly_progress(weekLeft)}
+          </p>
+        )}
       </div>
 
       {/* 도감 그리드 8칸 */}
       <div className="px-6 pt-4">
         <div className="grid grid-cols-2 gap-2">
-          {CATEGORIES.map((cat) => {
+          {CATEGORIES.map((cat, index) => {
             const count = summary.by_category[cat.id] ?? 0;
             const filled = count > 0;
             return (
@@ -133,15 +142,18 @@ export function Home(): JSX.Element {
                     : `${cat.label} 카테고리, 아직 비어 있음`
                 }
                 className={cn(
-                  'flex aspect-[3/2] flex-col items-center justify-center gap-1 rounded-2xl border-2 p-2 text-center transition active:scale-[0.97]',
+                  'card-enter flex aspect-[3/2] flex-col items-center justify-center gap-1 rounded-2xl border-2 p-2 text-center transition',
                   filled
-                    ? 'border-transparent shadow-sm'
-                    : 'border-dashed border-[var(--color-text-muted)]/40 bg-[var(--color-surface)]',
+                    ? 'border-transparent shadow-sm active:scale-[0.95] active:shadow-md'
+                    : 'border-dashed border-[var(--color-text-muted)]/40 active:scale-[0.97]',
                 )}
-                style={filled ? { background: cat.color } : undefined}
+                style={{
+                  animationDelay: `${index * 50}ms`,
+                  background: filled ? cat.color : `${cat.color}14`,
+                }}
               >
                 <span
-                  className={cn('text-[28px] leading-none', !filled && 'opacity-25 grayscale')}
+                  className={cn('text-[28px] leading-none', !filled && 'opacity-40 grayscale')}
                   aria-hidden
                 >
                   {cat.emoji}
