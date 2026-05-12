@@ -76,7 +76,7 @@ export function Home(): JSX.Element {
   }
 
   return (
-    <div className="safe-area flex h-full flex-col pb-40">
+    <div className="flex h-full flex-col pb-32">
       <Top
         title=""
         right={
@@ -90,7 +90,7 @@ export function Home(): JSX.Element {
         }
       />
 
-      <div className="px-6 pt-2">
+      <div className="px-6 pt-1">
         <p className="text-[14px] text-[var(--color-text-muted)]">
           {nickname ? `${nickname}님,` : '안녕하세요!'}
         </p>

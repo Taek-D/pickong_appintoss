@@ -154,7 +154,7 @@ export function Nickname(): JSX.Element {
   const canSubmit = value.length > 0 && !loading;
 
   return (
-    <div className="safe-area flex h-full flex-col">
+    <div className="flex h-full flex-col">
       <Top title="" />
       <div className="flex flex-1 flex-col gap-6 px-6 pt-4">
         <div>

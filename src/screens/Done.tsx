@@ -33,7 +33,7 @@ export function Done(): JSX.Element {
   }, []);
 
   return (
-    <div className="safe-area flex h-full flex-col">
+    <div className="flex h-full flex-col">
       <Top title="" />
       <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
         <div

@@ -34,7 +34,7 @@ export function List(): JSX.Element {
   }
 
   return (
-    <div className="safe-area flex h-full flex-col">
+    <div className="flex h-full flex-col">
       <Top title="내 기록" />
 
       {/* 카테고리 필터 (가로 스크롤) */}

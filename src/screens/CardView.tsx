@@ -104,7 +104,7 @@ export function CardView(): JSX.Element {
   const topMeta = CATEGORIES.find((c) => c.id === card.top_category) ?? CATEGORIES[7]!;
 
   return (
-    <div className="safe-area flex h-full flex-col pb-32">
+    <div className="flex h-full flex-col pb-32">
       <Top title="" />
       <div className="flex flex-1 flex-col items-center px-6">
         <p className="mt-2 text-[14px] text-[var(--color-text-muted)]">

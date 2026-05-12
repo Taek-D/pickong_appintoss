@@ -88,7 +88,7 @@ export function Card(): JSX.Element {
   }, [userKey, nickname, ym, summary.total_count, summary.total_amount, summary.by_category]);
 
   return (
-    <div className="safe-area flex h-full flex-col pb-40">
+    <div className="flex h-full flex-col pb-40">
       <Top title="" />
 
       <div className="flex flex-1 flex-col items-center px-6">

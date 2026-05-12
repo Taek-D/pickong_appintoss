@@ -65,7 +65,7 @@ export function AddFlow(): JSX.Element {
   }
 
   return (
-    <div className="safe-area flex h-full flex-col">
+    <div className="flex h-full flex-col">
       <Top
         title={`${step}/3`}
         left={
@@ -123,7 +123,7 @@ function Step1({
   onSelect: (c: CategoryId) => void;
 }): JSX.Element {
   return (
-    <div className="flex flex-1 flex-col px-6 pt-2 pb-32">
+    <div className="flex flex-1 flex-col px-6 pt-2 pb-4">
       <h1 className="text-[24px] font-bold">{COPY.add_step1}</h1>
       <div className="mt-6 grid grid-cols-2 gap-3">
         {CATEGORIES.map((cat) => (

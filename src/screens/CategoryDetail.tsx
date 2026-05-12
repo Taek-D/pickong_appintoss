@@ -36,7 +36,7 @@ export function CategoryDetail(): JSX.Element {
   }
 
   return (
-    <div className="safe-area flex h-full flex-col pb-32">
+    <div className="flex h-full flex-col pb-32">
       <Top title={cat.label} />
 
       {list.length === 0 ? (
