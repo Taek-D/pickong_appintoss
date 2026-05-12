@@ -118,8 +118,8 @@ export function Home(): JSX.Element {
       </div>
 
       {/* 도감 그리드 8칸 */}
-      <div className="px-6 pt-6">
-        <div className="grid grid-cols-2 gap-3">
+      <div className="px-6 pt-4">
+        <div className="grid grid-cols-2 gap-2">
           {CATEGORIES.map((cat) => {
             const count = summary.by_category[cat.id] ?? 0;
             const filled = count > 0;
@@ -133,7 +133,7 @@ export function Home(): JSX.Element {
                     : `${cat.label} 카테고리, 아직 비어 있음`
                 }
                 className={cn(
-                  'flex aspect-square flex-col items-center justify-center gap-2 rounded-2xl border-2 p-3 text-center transition active:scale-[0.97]',
+                  'flex aspect-[3/2] flex-col items-center justify-center gap-1 rounded-2xl border-2 p-2 text-center transition active:scale-[0.97]',
                   filled
                     ? 'border-transparent shadow-sm'
                     : 'border-dashed border-[var(--color-text-muted)]/40 bg-[var(--color-surface)]',
@@ -141,16 +141,16 @@ export function Home(): JSX.Element {
                 style={filled ? { background: cat.color } : undefined}
               >
                 <span
-                  className={cn('text-[40px]', !filled && 'opacity-25 grayscale')}
+                  className={cn('text-[28px] leading-none', !filled && 'opacity-25 grayscale')}
                   aria-hidden
                 >
                   {cat.emoji}
                 </span>
-                <span className="text-[14px] font-semibold text-[var(--color-text)]">
+                <span className="text-[13px] font-semibold leading-tight text-[var(--color-text)]">
                   {cat.label}
                 </span>
                 {filled && (
-                  <span className="rounded-full bg-[var(--color-card-chip)] px-2 py-0.5 text-[12px] font-medium tabular-nums">
+                  <span className="rounded-full bg-[var(--color-card-chip)] px-2 py-0.5 text-[11px] font-medium leading-none tabular-nums">
                     {count}콩
                   </span>
                 )}
@@ -161,19 +161,19 @@ export function Home(): JSX.Element {
       </div>
 
       {/* 카드 보기 버튼 (조건부) */}
-      <div className="px-6 pt-6">
+      <div className="px-6 pt-3">
         <button
           onClick={onCardUnlock}
           disabled={!cardEligible}
           className={cn(
-            'w-full rounded-2xl px-4 py-4 text-left transition',
+            'w-full rounded-2xl px-4 py-3 text-left transition',
             cardEligible
               ? 'bg-[var(--color-primary-soft)] text-[var(--color-text)]'
               : 'bg-[var(--color-border)]/40 text-[var(--color-text-muted)]',
           )}
         >
           <div className="text-[14px] font-semibold">이번 달 카드 보기</div>
-          <div className="mt-1 text-[12px]">
+          <div className="mt-0.5 text-[12px]">
             {cardEligible ? '월간 캐릭터를 만나러 가요' : COPY.card_lock_hint}
           </div>
         </button>
