@@ -20,6 +20,20 @@ export function Home(): JSX.Element {
   const collection = Math.round(summary.collection_rate * 100);
   const weekLeft = Math.max(0, summary.weekly_target - summary.this_week_count);
 
+  // 진행률 바 진입 애니메이션 — 0% → collection% 트윈
+  // prefers-reduced-motion 존중: 모션 줄이기 설정 시 즉시 적용
+  const [gaugeWidth, setGaugeWidth] = useState(0);
+  useEffect(() => {
+    if (!loaded) return;
+    const prefersReduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced) {
+      setGaugeWidth(collection);
+      return;
+    }
+    const id = requestAnimationFrame(() => setGaugeWidth(collection));
+    return () => cancelAnimationFrame(id);
+  }, [loaded, collection]);
+
   // home_view 추적 — loaded/userKey 가 안정적으로 정해지면 1회.
   // (이전 deps 에 summary.* 가 들어가서 zustand 리렌더 시 매번 새 객체로 평가 → setAdAlreadyShown 무한 루프 유발)
   useEffect(() => {
@@ -83,10 +97,17 @@ export function Home(): JSX.Element {
         <h1 className="mt-1 text-[24px] font-bold">{COPY.collection_rate(collection)}</h1>
 
         {/* 진행 게이지 */}
-        <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-[var(--color-border)]">
+        <div
+          className="mt-3 h-2 w-full overflow-hidden rounded-full bg-[var(--color-border)]"
+          role="progressbar"
+          aria-valuenow={collection}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label={`이번 달 도감 ${collection}% 채움`}
+        >
           <div
-            className="h-full rounded-full bg-[var(--color-primary)] transition-all"
-            style={{ width: `${collection}%` }}
+            className="h-full rounded-full bg-[var(--color-primary)] transition-[width] duration-700 ease-out"
+            style={{ width: `${gaugeWidth}%` }}
           />
         </div>
 
