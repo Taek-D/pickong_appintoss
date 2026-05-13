@@ -83,22 +83,36 @@ export function Home(): JSX.Element {
           <button
             onClick={() => nav('/set')}
             aria-label="설정"
-            className="text-[20px] text-[var(--color-text-muted)]"
+            className="-mr-1 flex h-10 w-10 items-center justify-center rounded-full text-[var(--color-text-muted)] active:bg-[var(--color-border)]/40"
           >
-            ⋯
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
           </button>
         }
       />
 
       <div className="px-6 pt-1">
-        <p className="text-[14px] text-[var(--color-text-muted)]">
+        <p className="text-[13px] text-[var(--color-text-muted)]">
           {nickname ? `${nickname}님,` : '안녕하세요!'}
         </p>
-        <h1 className="mt-1 text-[24px] font-bold">{COPY.collection_rate(collection)}</h1>
+        <h1 className="text-[22px] font-bold leading-tight">{COPY.collection_rate(collection)}</h1>
 
         {/* 진행 게이지 */}
         <div
-          className="mt-3 h-2 w-full overflow-hidden rounded-full bg-[var(--color-border)]"
+          className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[var(--color-border)]"
           role="progressbar"
           aria-valuenow={collection}
           aria-valuemin={0}
@@ -113,21 +127,21 @@ export function Home(): JSX.Element {
 
         {/* 주간 진행 — 목표 달성 시 pill 강조, 미달 시 muted */}
         {weekLeft <= 0 ? (
-          <div className="mt-3">
+          <div className="mt-2">
             <span className="inline-flex items-center gap-1 rounded-full bg-[var(--color-primary-soft)] px-2.5 py-1 text-[12px] font-semibold text-[var(--color-text)]">
               <span aria-hidden>✓</span>
               {COPY.weekly_progress(weekLeft)}
             </span>
           </div>
         ) : (
-          <p className="mt-3 text-[13px] text-[var(--color-text-muted)]">
+          <p className="mt-2 text-[13px] text-[var(--color-text-muted)]">
             {COPY.weekly_progress(weekLeft)}
           </p>
         )}
       </div>
 
       {/* 도감 그리드 8칸 */}
-      <div className="px-6 pt-4">
+      <div className="px-6 pt-3">
         <div className="grid grid-cols-2 gap-2">
           {CATEGORIES.map((cat, index) => {
             const count = summary.by_category[cat.id] ?? 0;
@@ -142,7 +156,7 @@ export function Home(): JSX.Element {
                     : `${cat.label} 카테고리, 아직 비어 있음`
                 }
                 className={cn(
-                  'card-enter flex aspect-[3/2] flex-col items-center justify-center gap-1 rounded-2xl border-2 p-2 text-center transition',
+                  'card-enter flex aspect-[16/9] flex-col items-center justify-center gap-1 rounded-2xl border-2 p-2 text-center transition',
                   filled
                     ? 'border-transparent shadow-sm active:scale-[0.95] active:shadow-md'
                     : 'border-dashed border-[var(--color-text-muted)]/40 active:scale-[0.97]',
