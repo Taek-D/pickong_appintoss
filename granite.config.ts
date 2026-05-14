@@ -18,6 +18,7 @@ export default defineConfig({
     primaryColor: '#7BD389',
     icon: PUBLIC_ICON_URL,
   },
+  permissions: [],
   navigationBar: {
     withBackButton: true,
     withHomeButton: true,
